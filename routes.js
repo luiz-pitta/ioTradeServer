@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const schedule = require('node-schedule');
 
 const sensor_price = require('./functions/sensor_price');
+const get_user = require('./functions/user');
 
 const config = require('./config/config.json');
 const db = require('./models/Connection');
@@ -38,6 +39,15 @@ module.exports = router => {
 		sensor_price.getSensorPriceInformation()
 
 		.then(result => res.json({ sensorPriceArray: result.sensorPriceArray }))
+
+		.catch(err => res.status(err.status).json({ message: err.message }));
+	});
+
+	router.get('/get_user', (req,res) => {
+
+		get_user.getProfile()
+
+		.then(result => res.json({ user: result.user }))
 
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});

@@ -9,7 +9,7 @@ exports.getSensorPriceInformation = () =>
 		let sensorPriceArray =[];
 
 		const cypher = "MATCH (s:Sensor)-[r:IS_IN]->(g:Group) "
-					+"RETURN s, r.price, g.title";
+					+"RETURN s, r.price, g.title ORDER BY s.title";
 
 		db.cypher({
 		    query: cypher,
