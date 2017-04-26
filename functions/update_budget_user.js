@@ -10,7 +10,6 @@ exports.updateUserBudget = (price) =>
 
 		const cypher = "MATCH (p:Profile) "
 					+"SET p.budget = {price} ";
-					+"RETURN p ";
 
 		db.cypher({
 		    query: cypher,
