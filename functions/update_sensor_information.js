@@ -6,12 +6,9 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 	
 	new Promise((resolve,reject) => {
 
-		let user;
-
-		const cypher = "MATCH (s:Sensor {title: {title}})-[r:IS_IN]->(c:Group {title: {category}}) "
+		const cypher = "MATCH (s:Sensor {title: {title}})-[r:IS_IN]->(g:Group {title: {category}}) "
 					+"SET r.price = {price}, "
-					+"SET c.title = {category_new}, "
-					+"RETURN p ";
+					+"SET g.title = {category_new} "
 
 		db.cypher({
 		    query: cypher,
