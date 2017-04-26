@@ -6,7 +6,7 @@ exports.getSensorPriceInformation = () =>
 	
 	new Promise((resolve,reject) => {
 
-		let sensorPrice =[];
+		let sensorPriceArray =[];
 
 		const cypher = "MATCH (s:Sensor)-[r:IS_IN]->(g:Group) "
 					+"RETURN s, r.price, g.title";
@@ -26,10 +26,10 @@ exports.getSensorPriceInformation = () =>
 		            s.category = title_group;
 		            s.price = price_sensor;
 
-		            sensorPrice.push(s);
+		            sensorPriceArray.push(s);
 		        });
 
-				resolve({ status: 201, sensorPrice: sensorPrice });
+				resolve({ status: 201, sensorPriceArray: sensorPriceArray });
 		    }
 		    
 		});

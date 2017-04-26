@@ -37,7 +37,7 @@ module.exports = router => {
 
 		sensor_price.getSensorPriceInformation()
 
-		.then(result => res.json({ sensorPrice: result.sensorPrice }))
+		.then(result => res.json({ sensorPriceArray: result.sensorPriceArray }))
 
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
