@@ -8,7 +8,7 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 
 		const cypher = "MATCH (s:Sensor {title: {title}})-[r:IS_IN]->(g:Group {title: {category}}) "
 					+"SET r.price = {price}, "
-					+"SET g.title = {category_new} "
+					+"SET g.title = {category_new} ";
 
 		db.cypher({
 		    query: cypher,
