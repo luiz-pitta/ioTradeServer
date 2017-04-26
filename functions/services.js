@@ -8,6 +8,8 @@ exports.getServices = (lat, lng) =>
 
 		let services =[];
 
+		console.log(lat + " " + lng);
+
 		const cypher = "MATCH (p:Service) "
 					+"RETURN p ";
 
