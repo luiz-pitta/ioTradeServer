@@ -6,7 +6,7 @@ const schedule = require('node-schedule');
 
 const sensor_price = require('./functions/sensor_price');
 const get_user = require('./functions/user');
-const update_user_budget = require('./functions/user');
+const update_user_budget = require('./functions/update_budget_user');
 
 const config = require('./config/config.json');
 const db = require('./models/Connection');
