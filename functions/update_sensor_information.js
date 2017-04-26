@@ -23,6 +23,7 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 		    },
 		    lean: true
 		}, (err, results) =>{
+			console.log(err);
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else
