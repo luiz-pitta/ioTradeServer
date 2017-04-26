@@ -4,7 +4,7 @@ const auth = require('basic-auth');
 const jwt = require('jsonwebtoken');
 const schedule = require('node-schedule');
 
-const sensor_price = require('./functions/register');
+const sensor_price = require('./functions/sensor_price');
 
 const config = require('./config/config.json');
 const db = require('./models/Connection');
