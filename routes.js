@@ -6,6 +6,7 @@ const schedule = require('node-schedule');
 
 const sensor_price = require('./functions/sensor_price');
 const get_user = require('./functions/user');
+const get_services = require('./functions/services');
 const update_user_budget = require('./functions/update_budget_user');
 const update_sensor_information = require('./functions/update_sensor_information');
 
@@ -58,6 +59,18 @@ module.exports = router => {
 		sensor_price.getSensorPriceInformation()
 
 		.then(result => res.json({ sensorPriceArray: result.sensorPriceArray }))
+
+		.catch(err => res.status(err.status).json({ message: err.message }));
+	});
+
+	router.post('/get_services_information', (req,res) => {
+
+		const lat = req.body.lat;
+		const lng = req.body.lng;
+
+		get_services.getServices(lat, lng)
+
+		.then(result => res.json({ services: result.services }))
 
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
