@@ -6,6 +6,7 @@ const schedule = require('node-schedule');
 
 const sensor_price = require('./functions/sensor_price');
 const get_user = require('./functions/user');
+const update_user_budget = require('./functions/user');
 
 const config = require('./config/config.json');
 const db = require('./models/Connection');
@@ -14,9 +15,11 @@ module.exports = router => {
 
 	router.get('/', (req, res) => res.end('IoTrade!'));
 
-	router.post('/set_push_notification', (req, res) => {
+	router.post('/update_user_budget', (req, res) => {
 
-		sensor_price.getSensorPriceInformation()
+		const price = req.body.price;
+
+		update_user_budget.updateUserBudget(price)
 
 		.then(result => res.json({ message: result.message }))
 
