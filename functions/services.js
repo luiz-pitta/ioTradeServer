@@ -57,11 +57,17 @@ exports.getServicesFilter = (lat, lng, query, price_start, price_end) =>
 
 		let services =[];
 
-		const cypher = "MATCH (p:Service) "
-					+"RETURN p ";
+		const cypher = "MATCH (p:Service)-[:BELONGS_TO]->(c:Category)"
+					+"WHERE c.title =~ {query} AND  p.price >= {price_start} AND p.price <= {price_end} "
+					+"RETURN p";
 
 		db.cypher({
 		    query: cypher,
+		    params: {
+		        price_start: price_start,
+		        price_end: price_end,
+	            query: query											
+		    }
 		    lean: true
 		}, (err, results) =>{
 			if (err) 
