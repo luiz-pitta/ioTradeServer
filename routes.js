@@ -75,6 +75,25 @@ module.exports = router => {
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
 
+	router.post('/get_services_information_filter', (req,res) => {
+
+		const lat = req.body.lat;
+		const lng = req.body.lng;
+
+		const query = req.body.category;
+		const price_start = req.body.from;
+		const price_end = req.body.to;
+
+		console.log(query + " " + from + " " + to + " " + lat);
+
+
+		get_services.getServicesFilter(lat, lng, query, price_start, price_end)
+
+		.then(result => res.json({ services: result.services }))
+
+		.catch(err => res.status(err.status).json({ message: err.message }));
+	});
+
 	router.get('/get_user', (req,res) => {
 
 		get_user.getProfile()
