@@ -84,9 +84,6 @@ module.exports = router => {
 		const price_start = req.body.from;
 		const price_end = req.body.to;
 
-		console.log(query + " " + price_start + " " + price_end + " " + lat);
-
-
 		get_services.getServicesFilter(lat, lng, query, price_start, price_end)
 
 		.then(result => res.json({ services: result.services }))

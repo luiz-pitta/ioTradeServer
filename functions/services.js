@@ -56,6 +56,8 @@ exports.getServicesFilter = (lat, lng, query, price_start, price_end) =>
 	new Promise((resolve,reject) => {
 
 		let services =[];
+		price_start = parseFloat(price_start);
+		price_end = parseFloat(price_end);
 
 		const cypher = "MATCH (p:Service)-[:BELONGS_TO]->(c:Category) "
 					+"WHERE c.title =~ {query} AND (p.price >= {price_start} AND p.price <= {price_end}) "
