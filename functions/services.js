@@ -67,7 +67,7 @@ exports.getServicesFilter = (lat, lng, query, price_start, price_end) =>
 		        price_start: price_start,
 		        price_end: price_end,
 	            query: query											
-		    }
+		    },
 		    lean: true
 		}, (err, results) =>{
 			if (err) 
