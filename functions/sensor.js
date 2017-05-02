@@ -61,7 +61,6 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 
 		            if(rank > high_rank)
 		            	high_rank = rank;
-		            }
 		        });
 
 		        sensors.forEach(function (sensor) {
