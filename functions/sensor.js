@@ -52,7 +52,7 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
 		    	results.forEach(function (obj) {
-		            let p = obj['p'];price_end = parseFloat(price_end);
+		            let p = obj['p'];
 		            const rank = parseFloat(obj['r.sum)'])/ parseFloat(obj['r.qty)']);
 		            const cat = obj['g.title'];
 		            p.rank = rank;
