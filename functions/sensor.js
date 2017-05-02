@@ -53,9 +53,9 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		    else{
 		    	results.forEach(function (obj) {
 		            let p = obj['p'];
-		            let sum = obj['r.sum)'];
-		            let qty = obj['r.qty)'];
-		            let rank = parseFloat(sum/qty);
+		            let sum = parseFloat(obj['r.sum']);
+		            let qty = parseFloat(obj['r.qty']);
+		            let rank = sum/qty;
 		            const cat = obj['g.title'];
 		            p.rank = rank;
 		            p.category = cat;
