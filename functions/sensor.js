@@ -33,13 +33,13 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		let sensors =[];
 		let sensors_final =[];
 		let sensor_chosen;
-		let high_rank = -1;
+		let high_rank = -1.0;
 
 		const cypher = "MATCH (you:Profile) "
 					+"MATCH (s:Service {title:{service}})-[:BELONGS_TO]->(c:Category) "
 					+"MATCH (c)<-[:BELONGS_TO]-(p:Sensor)-[r:IS_IN]->(g:Group) "
 					+"WHERE r.price <= you.budget "
-					+"RETURN p, (r.sum/r.qty), g.title";
+					+"RETURN p, r.sum, r.qty, g.title";
 
 		db.cypher({
 		    query: cypher,
@@ -52,11 +52,13 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
 		    	results.forEach(function (obj) {
-		            let p = obj['p'];
-		            const rank = obj['(r.sum/r.qty)'];
+		            let p = obj['p'];price_end = parseFloat(price_end);
+		            const rank = parseFloat(obj['r.sum)'])/ parseFloat(obj['r.qty)']);
 		            const cat = obj['g.title'];
 		            p.rank = rank;
 		            p.category = cat;
+
+		            console.log(rank);
 
 		            sensors.push(p);
 
