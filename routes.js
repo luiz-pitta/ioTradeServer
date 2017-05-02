@@ -9,6 +9,7 @@ const get_user = require('./functions/user');
 const get_services = require('./functions/services');
 const update_user_budget = require('./functions/update_budget_user');
 const update_sensor_information = require('./functions/update_sensor_information');
+const get_sensor_matchmaking = require('./functions/sensor');
 
 const config = require('./config/config.json');
 const db = require('./models/Connection');
@@ -87,6 +88,21 @@ module.exports = router => {
 		get_services.getServicesFilter(lat, lng, query, price_start, price_end)
 
 		.then(result => res.json({ services: result.services }))
+
+		.catch(err => res.status(err.status).json({ message: err.message }));
+	});
+
+	router.post('/get_sensor_matchmaking', (req,res) => {
+
+		const lat = req.body.lat;
+		const lng = req.body.lng;
+
+		const service = req.body.service;
+		const price = req.body.from;
+
+		get_sensor_matchmaking.getSensorAlgorithm(lat, lng, service, price)
+
+		.then(result => res.json({ sensor: result.sensor }))
 
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
