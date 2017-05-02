@@ -59,7 +59,7 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 
 		            sensors.push(p);
 
-		            if(rank > high_rank)
+		            if(p.rank > high_rank)
 		            	high_rank = rank;
 		        });
 
