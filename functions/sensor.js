@@ -39,7 +39,7 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 					+"MATCH (s:Service {title:{service}})-[:BELONGS_TO]->(c:Category) "
 					+"MATCH (c)<-[:BELONGS_TO]-(p:Sensor)-[r:IS_IN]->(g:Group) "
 					+"WHERE r.price <= you.budget "
-					+"RETURN p, (r.sum/r.qty)";
+					+"RETURN p, (r.sum/r.qty), c.title";
 
 		db.cypher({
 		    query: cypher,
@@ -54,7 +54,9 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		    	results.forEach(function (obj) {
 		            let p = obj['p'];
 		            const rank = obj['(r.sum/r.qty)'];
+		            const cat = obj['c.title'];
 		            p.rank = rank;
+		            p.category = cat;
 
 		            sensors.push(p);
 
