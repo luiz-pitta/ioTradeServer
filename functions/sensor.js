@@ -60,8 +60,6 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		            p.rank = rank;
 		            p.category = cat;
 
-		            console.log(sum + " " + qty + " " + rank);
-
 		            sensors.push(p);
 
 		            if(rank > high_rank)
