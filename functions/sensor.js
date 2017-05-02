@@ -34,7 +34,6 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		let sensors_final =[];
 		let sensor_chosen;
 		let high_rank = -1;
-		price = parseFloat(price);
 
 		const cypher = "MATCH (you:Profile) "
 					+"MATCH (s:Service {title:{service}})-[:BELONGS_TO]->(c:Category) "
@@ -67,7 +66,7 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		        console.log(sensors);
 
 		        sensors.forEach(function (sensor) {
-		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && sensor.rank == high_rank){
+		            if(getDistanceFromLatLonInKm(lat, lng, sensor.lat, sensor.lng) < 1.5 && sensor.rank == high_rank){
 		            	sensors_final.push(sensor);
 		            }
 		        });
