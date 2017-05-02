@@ -63,6 +63,9 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		            	high_rank = rank;
 		        });
 
+		        console.log(high_rank);
+		        console.log(sensors);
+
 		        sensors.forEach(function (sensor) {
 		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && sensor.rank == high_rank){
 		            	sensors_final.push(sensor);
