@@ -26,7 +26,7 @@ function randomIntFromInterval(min,max)
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
-exports.getSensorAlgorithm = (lat, lng, service, price) => 
+exports.getSensorAlgorithm = (lat, lng, service) => 
 	
 	new Promise((resolve,reject) => {
 
@@ -36,16 +36,16 @@ exports.getSensorAlgorithm = (lat, lng, service, price) =>
 		let high_rank = -1;
 		price = parseFloat(price);
 
-		const cypher = "MATCH (s:Service {title:{service}})-[:BELONGS_TO]->(c:Category) "
+		const cypher = "MATCH (you:Profile) "
+					+"MATCH (s:Service {title:{service}})-[:BELONGS_TO]->(c:Category) "
 					+"MATCH (c)<-[:BELONGS_TO]-(p:Sensor)-[r:IS_IN]->(g:Group) "
-					+"WHERE r.price <= {price} "
+					+"WHERE r.price <= you.budget "
 					+"RETURN p, (r.sum/r.qty)";
 
 		db.cypher({
 		    query: cypher,
 		    params: {
-		        price: price,
-	            category: category											
+	            service: service											
 		    },
 		    lean: true
 		}, (err, results) =>{

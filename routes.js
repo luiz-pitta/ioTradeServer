@@ -98,9 +98,8 @@ module.exports = router => {
 		const lng = req.body.lng;
 
 		const service = req.body.service;
-		const price = req.body.from;
 
-		get_sensor_matchmaking.getSensorAlgorithm(lat, lng, service, price)
+		get_sensor_matchmaking.getSensorAlgorithm(lat, lng, service)
 
 		.then(result => res.json({ sensor: result.sensor }))
 
