@@ -39,7 +39,7 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 					+"MATCH (s:Service {title:{service}})-[:BELONGS_TO]->(c:Category) "
 					+"MATCH (c)<-[:BELONGS_TO]-(p:Sensor)-[r:IS_IN]->(g:Group) "
 					+"WHERE r.price <= you.budget "
-					+"RETURN p, (r.sum/r.qty), c.title";
+					+"RETURN p, (r.sum/r.qty), g.title";
 
 		db.cypher({
 		    query: cypher,
