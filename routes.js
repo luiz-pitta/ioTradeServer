@@ -45,6 +45,20 @@ module.exports = router => {
 		
 	});
 
+	router.post('/update_sensor_rating', (req, res) => {
+
+		const title = req.body.title;
+		const category = req.body.category;
+		const grade = req.body.rank;
+
+		update_sensor_information.updateSensorRating(title, category, grade)
+
+		.then(result => res.json({ message: result.message }))
+
+		.catch(err => res.status(err.status).json({ message: err.message }));
+		
+	});
+
 	router.get('/tags', (req,res) => {
 
 			sensor_price.getSensorPriceInformation()

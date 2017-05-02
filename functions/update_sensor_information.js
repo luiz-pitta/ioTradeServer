@@ -28,3 +28,30 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 		});
 
 	});
+
+
+exports.updateSensorRating = (title, category, grade) => 
+	
+	new Promise((resolve,reject) => {
+
+		const cypher = "MATCH (s:Sensor {title: {title}})-[r:IS_IN]->(g:Group {title: {category}}) "
+					+"SET r.qty = r.qty + 1, "
+					+"r.sum = r.sum + {grade} ";
+
+		db.cypher({
+		    query: cypher,
+		    params: {
+		        title: title,
+		        category: category,
+		        grade: grade
+		    },
+		    lean: true
+		}, (err, results) =>{
+			if (err) 
+		    	reject({ status: 500, message: 'Internal Server Error !' });
+		    else
+		    	resolve({ status: 201, message: 'OK!' });
+		    
+		});
+
+	});
