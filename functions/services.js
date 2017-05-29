@@ -41,7 +41,9 @@ exports.getServices = (lat, lng) =>
 		            const p = obj['cn'];
 		            const c = obj['c'];
 
-		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && categories.indexOf(c) === -1)
+		            console.log(categories.indexOf(c));
+
+		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && categories.indexOf(c) == -1)
 		            	categories.push(c);
 		            
 		        });
