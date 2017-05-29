@@ -28,8 +28,7 @@ exports.getServices = (lat, lng) =>
 		let categories =[];
 
 		const cypher = "MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category) "
-					+"WITH collect(distinct c) as cat, cn"
-					+"RETURN cn, cat ";
+					+"RETURN cn, c ";
 
 		db.cypher({
 		    query: cypher,
