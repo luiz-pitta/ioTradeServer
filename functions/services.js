@@ -41,10 +41,10 @@ exports.getServices = (lat, lng) =>
 		            const p = obj['cn'];
 		            const c = obj['c'];
 
-		            console.log(categories.indexOf(c));
+		            console.log(categories.indexOf(c.title));
 
-		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && categories.indexOf(c) == -1)
-		            	categories.push(c);
+		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && categories.indexOf(c.title) == -1)
+		            	categories.push(c.title);
 		            
 		        });
 
