@@ -41,52 +41,12 @@ exports.getServices = (lat, lng) =>
 		            const p = obj['cn'];
 		            const c = obj['c'];
 
-		            console.log(categories.indexOf(c.title));
-
 		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && categories.indexOf(c.title) == -1)
 		            	categories.push(c.title);
 		            
 		        });
 
 				resolve({ status: 201, categories: categories });
-		    }
-		    
-		});
-
-	});
-
-exports.getServicesFilter = (lat, lng, query, price_start, price_end) => 
-	
-	new Promise((resolve,reject) => {
-
-		let services =[];
-		price_start = parseFloat(price_start);
-		price_end = parseFloat(price_end);
-
-		const cypher = "MATCH (p:Service)-[:BELONGS_TO]->(c:Category) "
-					+"WHERE c.title =~ {query} AND (p.price >= {price_start} AND p.price <= {price_end}) "
-					+"RETURN p";
-
-		db.cypher({
-		    query: cypher,
-		    params: {
-		        price_start: price_start,
-		        price_end: price_end,
-	            query: query											
-		    },
-		    lean: true
-		}, (err, results) =>{
-			if (err) 
-		    	reject({ status: 500, message: 'Internal Server Error !' });
-		    else{
-		    	results.forEach(function (obj) {
-		            let p = obj['p'];
-
-		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5)
-		            	services.push(p);
-		        });
-
-				resolve({ status: 201, services: services });
 		    }
 		    
 		});

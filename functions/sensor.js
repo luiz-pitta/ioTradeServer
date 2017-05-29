@@ -26,7 +26,7 @@ function randomIntFromInterval(min,max)
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
-exports.getSensorAlgorithm = (lat, lng, service) => 
+exports.getSensorAlgorithm = (lat, lng, category) => 
 	
 	new Promise((resolve,reject) => {
 
@@ -36,23 +36,47 @@ exports.getSensorAlgorithm = (lat, lng, service) =>
 		let high_rank = -1.0;
 
 		const cypher = "MATCH (you:Profile) "
-					+"MATCH (s:Service {title:{service}})-[:BELONGS_TO]->(c:Category) "
-					+"MATCH (c)<-[:BELONGS_TO]-(p:Sensor)-[r:IS_IN]->(g:Group) "
-					+"WHERE r.price <= you.budget "
-					+"RETURN p, r.sum, r.qty, r.price, g.title";
+					+"MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}}) "
+					+"MATCH (s)-[sr:IS_IN]->(g:Group), (cn)-[cnr:IS_IN]->(g:Group) "
+					+"WHERE (sr.price + cnr.price) <= you.budget "
+					+"RETURN cn, s, sr, cnr ORDER BY cn.title";
 
 		db.cypher({
 		    query: cypher,
 		    params: {
-	            service: service											
+	            category: category											
 		    },
 		    lean: true
 		}, (err, results) =>{
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
+		    	let i, j;
+
+		    	for(i=0;i<results.length;i++){
+		    		let j = i;
+		    		let obj = results[i];
+		    		let obj_next = results[j];
+		    		let cn = obj['cn'];
+		    		let cn_next = obj_next['cn'];
+	
+		    		while(cn.title == cn_next.title){
+						j++;
+						if(j < whats_going_act.length){
+							obj_next = results[j];
+							cn_next = obj_next['cn']
+						}
+						else{
+							cn_next = String(-2);
+						}
+						console.log("passei!")
+					}
+					i=j-1;
+					console.log(i)
+		    	}
+
 		    	results.forEach(function (obj) {
-		            let p = obj['p'];
+		            let p = obj['cn'];
 		            p.rank = parseFloat(obj['r.sum'])/parseFloat(obj['r.qty']);
 		            p.price = obj['r.price'];
 		            p.category = obj['g.title'];

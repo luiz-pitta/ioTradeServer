@@ -90,22 +90,6 @@ module.exports = router => {
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
 
-	router.post('/get_services_information_filter', (req,res) => {
-
-		const lat = req.body.lat;
-		const lng = req.body.lng;
-
-		const query = req.body.category;
-		const price_start = req.body.from;
-		const price_end = req.body.to;
-
-		get_services.getServicesFilter(lat, lng, query, price_start, price_end)
-
-		.then(result => res.json({ services: result.services }))
-
-		.catch(err => res.status(err.status).json({ message: err.message }));
-	});
-
 	router.post('/get_sensor_matchmaking', (req,res) => {
 
 		const lat = req.body.lat;
@@ -128,27 +112,4 @@ module.exports = router => {
 
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
-
-	function checkToken(req) {
-
-		const token = req.headers['x-access-token'];
-
-		if (token) {
-
-			try {
-
-  				var decoded = jwt.verify(token, config.secret);
-
-  				return decoded.message === req.params.id;
-
-			} catch(err) {
-
-				return false;
-			}
-
-		} else {
-
-			return false;
-		}
-	}
 }
