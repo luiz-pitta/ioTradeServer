@@ -25,10 +25,10 @@ exports.getServices = (lat, lng) =>
 	
 	new Promise((resolve,reject) => {
 
-		let services =[];
+		let categories =[];
 
-		const cypher = "MATCH (p:Service) "
-					+"RETURN p ";
+		const cypher = "MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category) "
+					+"RETURN cn, c ";
 
 		db.cypher({
 		    query: cypher,
@@ -38,13 +38,14 @@ exports.getServices = (lat, lng) =>
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
 		    	results.forEach(function (obj) {
-		            let p = obj['p'];
+		            const p = obj['cn'];
+		            const c = obj['c'];
 
 		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5)
-		            	services.push(p);
+		            	categories.push(c);
 		        });
 
-				resolve({ status: 201, services: services });
+				resolve({ status: 201, categories: categories });
 		    }
 		    
 		});

@@ -85,7 +85,7 @@ module.exports = router => {
 
 		get_services.getServices(lat, lng)
 
-		.then(result => res.json({ services: result.services }))
+		.then(result => res.json({ categories: result.categories }))
 
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
