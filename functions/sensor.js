@@ -85,8 +85,21 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					}
 					i=j-1;
 
-					if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5)
+					if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5){
 		            	sensors.push(cn);
+		            	sensors.array.sort(function(a,b) {  
+						    if (a.rank < b.rank)
+			                    return -1;
+			                else if (a.rank > b.rank)
+			                    return 1;
+			                else if (a.price < b.price)
+			                    return -1;
+			                else if (a.price > b.price)
+			                	return 1;
+			                else
+			                	return 0;
+						});
+					}
 		    	}
 
 		    	console.log(sensors[0].array)
