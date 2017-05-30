@@ -84,10 +84,34 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 						}
 					}
 					i=j-1;
-					sensors.push(cn);
+
+					if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5)
+		            	sensors.push(cn);
 		    	}
 
-		    	console.log(sensors);
+		    	console.log(sensors[0].array)
+		    	console.log(sensors[1].array)
+
+		    	sensors.sort(function(a,b) {  
+				    else if (a.rank < b.rank)
+	                    return -1;
+	                else if (a.rank > b.rank)
+	                    return 1;
+	                else if (a.sgnl_net < b.sgnl_net)
+	                    return -1;
+	                else if (a.sgnl_net > b.sgnl_net)
+	                    return 1;
+	                else if (a.batery < b.batery)
+	                    return -1;
+	                else if (a.batery > b.batery)
+	                	return 1;
+	                else if (a.price < b.price)
+	                    return -1;
+	                else if (a.price > b.price)
+	                	return 1;
+	                else
+	                	return 0;
+				});
 
 		    	results.forEach(function (obj) {
 		            let p = obj['cn'];
