@@ -62,7 +62,7 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 	
 		    		while(cn.title == cn_next.title){
 						j++;
-						if(j < whats_going_act.length){
+						if(j < results.length){
 							obj_next = results[j];
 							cn_next = obj_next['cn']
 						}
