@@ -53,98 +53,103 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		    else{
 		    	let i, j;
 
-		    	for(i=0;i<results.length;i++){
-		    		let j = i;
-		    		let obj = results[i];
-		    		let obj_next = results[j];
-		    		let cn = obj['cn'];
-		    		let cnr = obj['cnr'];
+		    	if(results.length > 0){
 
-		    		cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
-		            cn.price = cnr.price;
+			    	for(i=0;i<results.length;i++){
+			    		let j = i;
+			    		let obj = results[i];
+			    		let obj_next = results[j];
+			    		let cn = obj['cn'];
+			    		let cnr = obj['cnr'];
 
-		    		let cn_next = obj_next['cn'];
+			    		cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
+			            cn.price = cnr.price;
 
-		    		cn.array = [];
-	
-		    		while(cn.title == cn_next.title){
-		    			let s = obj_next['s'];
-		    			let sr = obj_next['sr'];
-		    			s.rank = parseFloat(sr.sum)/parseFloat(sr.qty);
-		            	s.price = sr.price;
-		            	cn.array.push(s);
+			    		let cn_next = obj_next['cn'];
 
-						j++;
-						if(j < results.length){
-							obj_next = results[j];
-							cn_next = obj_next['cn'];
+			    		cn.array = [];
+		
+			    		while(cn.title == cn_next.title){
+			    			let s = obj_next['s'];
+			    			let sr = obj_next['sr'];
+			    			s.rank = parseFloat(sr.sum)/parseFloat(sr.qty);
+			            	s.price = sr.price;
+			            	cn.array.push(s);
+
+							j++;
+							if(j < results.length){
+								obj_next = results[j];
+								cn_next = obj_next['cn'];
+							}
+							else{
+								cn_next = String(-2);
+							}
 						}
-						else{
-							cn_next = String(-2);
+						i=j-1;
+
+						if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5){
+							cn.array.sort(function(a,b) {  
+							    if (a.rank < b.rank)
+				                    return 1;
+				                else if (a.rank > b.rank)
+				                    return -1;
+				                else if (a.price < b.price)
+				                    return 1;
+				                else if (a.price > b.price)
+				                	return -1;
+				                else
+				                	return 0;
+							});
+			            	sensors.push(cn);
 						}
-					}
-					i=j-1;
+			    	}
 
-					if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5){
-						cn.array.sort(function(a,b) {  
-						    if (a.rank < b.rank)
-			                    return 1;
-			                else if (a.rank > b.rank)
-			                    return -1;
-			                else if (a.price < b.price)
-			                    return 1;
-			                else if (a.price > b.price)
-			                	return -1;
-			                else
-			                	return 0;
-						});
-		            	sensors.push(cn);
-					}
-		    	}
+			    	sensors.sort(function(a,b) {  
+					    if (a.rank < b.rank)
+		                    return 1;
+		                else if (a.rank > b.rank)
+		                    return -1;
+		                else if (a.sgnl_net < b.sgnl_net)
+		                    return 1;
+		                else if (a.sgnl_net > b.sgnl_net)
+		                    return -1;
+		                else if (a.batery < b.batery)
+		                    return 1;
+		                else if (a.batery > b.batery)
+		                	return -1;
+		                else if (a.price < b.price)
+		                    return 1;
+		                else if (a.price > b.price)
+		                	return -1;
+		                else
+		                	return 0;
+					});
 
-		    	sensors.sort(function(a,b) {  
-				    if (a.rank < b.rank)
-	                    return 1;
-	                else if (a.rank > b.rank)
-	                    return -1;
-	                else if (a.sgnl_net < b.sgnl_net)
-	                    return 1;
-	                else if (a.sgnl_net > b.sgnl_net)
-	                    return -1;
-	                else if (a.batery < b.batery)
-	                    return 1;
-	                else if (a.batery > b.batery)
-	                	return -1;
-	                else if (a.price < b.price)
-	                    return 1;
-	                else if (a.price > b.price)
-	                	return -1;
-	                else
-	                	return 0;
-				});
+			    	if(sensors.length > 0){
+						connect_chosen = sensors[0];
+						let sensors_final = [];
+						const high_rank = connect_chosen.array[0].rank;
+						console.log(high_rank);
 
-		    	if(sensors.length > 0){
-					connect_chosen = sensors[0];
-					let sensors_final = [];
-					const high_rank = connect_chosen.array[0].rank;
-					console.log(high_rank);
+						connect_chosen.array.forEach(function (obj) {
+				            if(obj.rank == high_rank)
+				            	sensors_final.push(obj);
+				        });
 
-					connect_chosen.array.forEach(function (obj) {
-			            if(obj.rank == high_rank)
-			            	sensors_final.push(obj);
-			        });
+				        if(sensors_final.length > 1){
+				        	const position = randomIntFromInterval(0, (sensors_final.length-1));
+				        	sensor_chosen = sensors_final[position];
+			       		}else
+			        		sensor_chosen = sensors_final[0];
+			    	}
 
-			        if(sensors_final.length > 1){
-			        	const position = randomIntFromInterval(0, (sensors_final.length-1));
-			        	sensor_chosen = sensors_final[position];
-		       		}else
-		        		sensor_chosen = sensors_final[0];
-		    	}
+			    	console.log(connect_chosen);
+			    	console.log(sensor_chosen);
 
-		    	console.log(connect_chosen);
-		    	console.log(sensor_chosen);
-
-				resolve({ status: 201, sensor: sensor_chosen });
+					resolve({ status: 201, sensor: sensor_chosen });
+				}else{
+					resolve({ status: 201, sensor: sensor_chosen });
+				}
 		    }
 		    
 		});
