@@ -64,6 +64,8 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		            cn.price = cnr.price;
 
 		    		let cn_next = obj_next['cn'];
+
+		    		cn.array = [];
 	
 		    		while(cn.title == cn_next.title){
 		    			let s = obj_next['s'];
