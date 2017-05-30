@@ -31,7 +31,7 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 	new Promise((resolve,reject) => {
 
 		let sensors =[];
-		let sensors_final =[];
+		let connect_chosen;
 		let sensor_chosen;
 		let high_rank = -1.0;
 
@@ -102,9 +102,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					}
 		    	}
 
-		    	console.log(sensors[0].array)
-		    	console.log(sensors[1].array)
-
 		    	sensors.sort(function(a,b) {  
 				    if (a.rank < b.rank)
 	                    return 1;
@@ -126,30 +123,26 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 	                	return 0;
 				});
 
-		    	results.forEach(function (obj) {
-		            let p = obj['cn'];
-		            p.rank = parseFloat(obj['r.sum'])/parseFloat(obj['r.qty']);
-		            p.price = obj['r.price'];
-		            p.category = obj['g.title'];
+		    	if(sensors.length > 0){
+					connect_chosen = sensors[0];
+					let sensors_final = [];
+					const high_rank = connect_chosen.array[0].rank;
+					console.log(high_rank);
 
-		            sensors.push(p);
+					connect_chosen.array.forEach(function (obj) {
+			            if(obj.rank == high_rank)
+			            	sensors_final.push(obj);
+			        });
 
-		            if(p.rank > high_rank)
-		            	high_rank = p.rank;
-		        });
+			        if(sensors_final.length > 1){
+			        	const position = randomIntFromInterval(0, (sensors_final.length-1));
+			        	sensor_chosen = sensors_final[position];
+		       		}else
+		        		sensor_chosen = sensors_final[0];
+		    	}
 
-		        sensors.forEach(function (sensor) {
-		            if(getDistanceFromLatLonInKm(lat, lng, sensor.lat, sensor.lng) < 1.5 && sensor.rank == high_rank){
-		            	sensors_final.push(sensor);
-		            }
-		        });
-
-		        if(sensors_final.length > 1){
-		        	const position = randomIntFromInterval(0, (sensors_final.length-1));
-		        	sensor_chosen = sensors_final[position];
-
-		        }else
-		        	sensor_chosen = sensors_final[0];
+		    	console.log(connect_chosen);
+		    	console.log(sensor_chosen);
 
 				resolve({ status: 201, sensor: sensor_chosen });
 		    }
