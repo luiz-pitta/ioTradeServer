@@ -93,7 +93,7 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		    	console.log(sensors[1].array)
 
 		    	sensors.sort(function(a,b) {  
-				    else if (a.rank < b.rank)
+				    if (a.rank < b.rank)
 	                    return -1;
 	                else if (a.rank > b.rank)
 	                    return 1;
