@@ -58,22 +58,34 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		    		let obj = results[i];
 		    		let obj_next = results[j];
 		    		let cn = obj['cn'];
+		    		let cnr = obj['cnr'];
+
+		    		cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
+		            cn.price = cnr.price;
+
 		    		let cn_next = obj_next['cn'];
 	
 		    		while(cn.title == cn_next.title){
+		    			let s = obj_next['s'];
+		    			let sr = obj_next['sr'];
+		    			s.rank = parseFloat(sr.sum)/parseFloat(sr.qty);
+		            	s.price = sr.price;
+		            	cn.array.push(s);
+
 						j++;
 						if(j < results.length){
 							obj_next = results[j];
-							cn_next = obj_next['cn']
+							cn_next = obj_next['cn'];
 						}
 						else{
 							cn_next = String(-2);
 						}
 					}
-					console.log(j)
 					i=j-1;
-				
+					sensors.push(cn);
 		    	}
+
+		    	console.log(sensors);
 
 		    	results.forEach(function (obj) {
 		            let p = obj['cn'];
