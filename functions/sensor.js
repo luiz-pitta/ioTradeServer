@@ -37,7 +37,7 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 
 		const cypher = "MATCH (you:Profile) "
 					+"MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}}) "
-					+"MATCH (s)-[sr:IS_IN]->(g:Group), (cn)-[cnr:IS_IN]->(g:Group) "
+					+"MATCH (s)-[sr:IS_IN]->(g:Group), (cn)-[cnr:IS_IN]->(g2:Group) "
 					+"WHERE (sr.price + cnr.price) <= you.budget "
 					+"RETURN cn, s, sr, cnr ORDER BY cn.title";
 
@@ -69,10 +69,10 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 						else{
 							cn_next = String(-2);
 						}
-						console.log("passei!")
 					}
+					console.log(j)
 					i=j-1;
-					console.log(i)
+				
 		    	}
 
 		    	results.forEach(function (obj) {
