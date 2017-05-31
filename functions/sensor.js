@@ -223,27 +223,27 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 		                else if (a.batery > b.batery)
 		                	return -1;
 		                else if (a.price < b.price)
-		                    return 1;
+		                    return -1;
 		                else if (a.price > b.price)
-		                	return -1;
+		                	return 1;
 
 		                else if (a.sensor.rank < b.sensor.rank)
 		                    return 1;
 		                else if (a.sensor.rank > b.sensor.rank)
 		                	return -1;
 		                else if (a.sensor.price < b.sensor.price)
-		                    return 1;
+		                    return -1;
 		                else if (a.sensor.price > b.sensor.price)
-		                	return -1;
+		                	return 1;
 
 		                else if (a.analytics.rank < b.analytics.rank)
 		                    return 1;
 		                else if (a.analytics.rank > b.analytics.rank)
 		                	return -1;
 		                else if (a.analytics.price < b.analytics.price)
-		                    return 1;
+		                    return -1;
 		                else if (a.analytics.price > b.analytics.price)
-		                	return -1;
+		                	return 1;
 		                else
 		                	return 0;
 					});
