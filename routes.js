@@ -113,7 +113,7 @@ module.exports = router => {
 
 		get_sensor_matchmaking.getSensorAlgorithmAnalytics(lat, lng, category)
 
-		.then(result => res.json({ sensor: result.sensor }))
+		.then(result => res.json({ sensor: result.sensor, connect: result.connect, analytics:result.analytics }))
 
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});

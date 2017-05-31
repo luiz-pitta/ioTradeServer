@@ -94,9 +94,9 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 				                else if (a.rank > b.rank)
 				                    return -1;
 				                else if (a.price < b.price)
-				                    return 1;
+				                    return -1;
 				                else if (a.price > b.price)
-				                	return -1;
+				                	return 1;
 				                else
 				                	return 0;
 							});
@@ -118,9 +118,9 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		                else if (a.batery > b.batery)
 		                	return -1;
 		                else if (a.price < b.price)
-		                    return 1;
+		                    return -1;
 		                else if (a.price > b.price)
-		                	return -1;
+		                	return 1;
 		                else
 		                	return 0;
 					});
@@ -159,9 +159,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 	new Promise((resolve,reject) => {
 
 		let sensors =[];
-		let connect_chosen;
-		let sensor_chosen;
-		let high_rank = -1.0;
+		let chosen_group;
 
 		const cypher = "MATCH (you:Profile) "
 					+"MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}}) "
@@ -248,10 +246,10 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 		                	return 0;
 					});
 
-					console.log(sensors)
+					chosen_group = sensors[0];
 
 
-					resolve({ status: 201, sensor: null });
+					resolve({ status: 201, sensor: chosen_group.sensor, connect: chosen_group, analytics : chosen_group.analytics });
 				}else
 					resolve({ status: 201, sensor: null, connect: null, analytics : null });
 				
