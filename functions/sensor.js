@@ -170,7 +170,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					+"MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
 					+"MATCH (a)-[ar:IS_IN]->(g3:Group) "
 					+"WHERE (sr.price + cnr.price + ar.price) <= you.budget "
-					+"RETURN cn, cnr, s, sr, a ,ar ORDER BY cn.title";
+					+"RETURN cn, cnr, s, sr, a ,ar ORDER BY cn.title, s.title, a.title";
 
 		db.cypher({
 		    query: cypher,
@@ -228,27 +228,27 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 		                    return 1;
 		                else if (a.price > b.price)
 		                	return -1;
+
+		                else if (a.sensor.rank < b.sensor.rank)
+		                    return 1;
+		                else if (a.sensor.rank > b.sensor.rank)
+		                	return -1;
+		                else if (a.sensor.price < b.sensor.price)
+		                    return 1;
+		                else if (a.sensor.price > b.sensor.price)
+		                	return -1;
+
+		                else if (a.analytics.rank < b.analytics.rank)
+		                    return 1;
+		                else if (a.analytics.rank > b.analytics.rank)
+		                	return -1;
+		                else if (a.analytics.price < b.analytics.price)
+		                    return 1;
+		                else if (a.analytics.price > b.analytics.price)
+		                	return -1;
 		                else
 		                	return 0;
 					});
-
-			    	if(sensors.length > 0){
-						connect_chosen = sensors[0];
-						let sensors_final = [];
-						const high_rank = connect_chosen.array[0].rank;
-						console.log(high_rank);
-
-						connect_chosen.array.forEach(function (obj) {
-				            if(obj.rank == high_rank)
-				            	sensors_final.push(obj);
-				        });
-
-				        if(sensors_final.length > 1){
-				        	const position = randomIntFromInterval(0, (sensors_final.length-1));
-				        	sensor_chosen = sensors_final[position];
-			       		}else
-			        		sensor_chosen = sensors_final[0];
-			    	}
 
 
 					resolve({ status: 201, sensor: null });
