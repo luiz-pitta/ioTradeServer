@@ -129,7 +129,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 						connect_chosen = sensors[0];
 						let sensors_final = [];
 						const high_rank = connect_chosen.array[0].rank;
-						console.log(high_rank);
 
 						connect_chosen.array.forEach(function (obj) {
 				            if(obj.rank == high_rank)
