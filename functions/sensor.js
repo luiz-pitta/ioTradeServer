@@ -209,8 +209,6 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 			            
 			        });
 
-			        console.log(sensors)
-
 			    	sensors.sort(function(a,b) {  
 					    if (a.rank < b.rank)
 		                    return 1;
@@ -249,6 +247,8 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 		                else
 		                	return 0;
 					});
+
+					console.log(sensors)
 
 
 					resolve({ status: 201, sensor: null });
