@@ -95,9 +95,23 @@ module.exports = router => {
 		const lat = req.body.lat;
 		const lng = req.body.lng;
 
-		const service = req.body.service;
+		const category = req.body.service;
 
-		get_sensor_matchmaking.getSensorAlgorithm(lat, lng, service)
+		get_sensor_matchmaking.getSensorAlgorithm(lat, lng, category)
+
+		.then(result => res.json({ sensor: result.sensor, connect: result.connect }))
+
+		.catch(err => res.status(err.status).json({ message: err.message }));
+	});
+
+	router.post('/get_sensor_matchmaking_analytics', (req,res) => {
+
+		const lat = req.body.lat;
+		const lng = req.body.lng;
+
+		const category = req.body.service;
+
+		get_sensor_matchmaking.getSensorAlgorithmAnalytics(lat, lng, category)
 
 		.then(result => res.json({ sensor: result.sensor }))
 

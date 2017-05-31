@@ -143,13 +143,118 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 			        		sensor_chosen = sensors_final[0];
 			    	}
 
-			    	console.log(connect_chosen);
-			    	console.log(sensor_chosen);
+					resolve({ status: 201, sensor: sensor_chosen, connect: connect_chosen });
+				}else
+					resolve({ status: 201, sensor: null, connect: null });
+				
+		    }
+		    
+		});
 
-					resolve({ status: 201, sensor: sensor_chosen });
-				}else{
-					resolve({ status: 201, sensor: sensor_chosen });
-				}
+	});
+
+
+exports.getSensorAlgorithmAnalytics = (lat, lng, category) => 
+	
+	new Promise((resolve,reject) => {
+
+		let sensors =[];
+		let connect_chosen;
+		let sensor_chosen;
+		let high_rank = -1.0;
+
+		const cypher = "MATCH (you:Profile) "
+					+"MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}}) "
+					+"MATCH (a:Analytics)-[:BELONGS_TO]->(c:Category {title: {category}}) "
+					+"MATCH (s)-[sr:IS_IN]->(g:Group)  "
+					+"MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
+					+"MATCH (a)-[ar:IS_IN]->(g3:Group) "
+					+"WHERE (sr.price + cnr.price + ar.price) <= you.budget "
+					+"RETURN cn, cnr, s, sr, a ,ar ORDER BY cn.title";
+
+		db.cypher({
+		    query: cypher,
+		    params: {
+	            category: category											
+		    },
+		    lean: true
+		}, (err, results) =>{
+			if (err) 
+		    	reject({ status: 500, message: 'Internal Server Error !' });
+		    else{
+		    	let i, j;
+
+		    	if(results && results.length > 0){
+
+			    	results.forEach(function (obj) {
+			            const cn = obj['cn'];
+			            const cnr = obj['cnr'];
+			            const s = obj['s'];
+			            const sr = obj['sr'];
+			            const a = obj['a'];
+			            const ar = obj['ar'];
+
+			            cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
+			            cn.price = cnr.price;
+			            s.rank = parseFloat(sr.sum)/parseFloat(sr.qty);
+			            s.price = sr.price;
+			            a.rank = parseFloat(ar.sum)/parseFloat(ar.qty);
+			            a.price = ar.price;
+
+			            cn.sensor = s;
+			            cn.analytics = a;
+
+			            if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5)
+			            	sensors.push(cn);
+			            
+			        });
+
+			        console.log(sensors)
+
+			    	sensors.sort(function(a,b) {  
+					    if (a.rank < b.rank)
+		                    return 1;
+		                else if (a.rank > b.rank)
+		                    return -1;
+		                else if (a.sgnl_net < b.sgnl_net)
+		                    return 1;
+		                else if (a.sgnl_net > b.sgnl_net)
+		                    return -1;
+		                else if (a.batery < b.batery)
+		                    return 1;
+		                else if (a.batery > b.batery)
+		                	return -1;
+		                else if (a.price < b.price)
+		                    return 1;
+		                else if (a.price > b.price)
+		                	return -1;
+		                else
+		                	return 0;
+					});
+
+			    	if(sensors.length > 0){
+						connect_chosen = sensors[0];
+						let sensors_final = [];
+						const high_rank = connect_chosen.array[0].rank;
+						console.log(high_rank);
+
+						connect_chosen.array.forEach(function (obj) {
+				            if(obj.rank == high_rank)
+				            	sensors_final.push(obj);
+				        });
+
+				        if(sensors_final.length > 1){
+				        	const position = randomIntFromInterval(0, (sensors_final.length-1));
+				        	sensor_chosen = sensors_final[position];
+			       		}else
+			        		sensor_chosen = sensors_final[0];
+			    	}
+
+
+					resolve({ status: 201, sensor: null });
+				}else
+					resolve({ status: 201, sensor: null, connect: null, analytics : null });
+				
 		    }
 		    
 		});
