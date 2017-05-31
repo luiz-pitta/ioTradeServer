@@ -7,8 +7,7 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 	new Promise((resolve,reject) => {
 
 		const cypher = "MATCH (s:Sensor {title: {title}})-[r:IS_IN]->(g:Group {title: {category}}) MERGE (g2:Group {title: {category_new}}) "
-					+"SET r.price = {price} "
-					+"MERGE (s)-[:IS_IN {price: r.price, qty:r.qty, sum:r.sum}]->(g2) DELETE r ";
+					+"MERGE (s)-[:IS_IN {price: {price}, qty:r.qty, sum:r.sum}]->(g2) DELETE r ";
 
 		db.cypher({
 		    query: cypher,
