@@ -74,7 +74,7 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 			});
 		}else{
 			db.cypher({
-			    query: cypher,
+			    query: cypher_analitycs,
 			    params: {
 			        title_sensor: sensor.title,
 			        category_sensor: sensor.category,
