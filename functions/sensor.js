@@ -186,12 +186,12 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 		    	if(results && results.length > 0){
 
 			    	results.forEach(function (obj) {
-			            const cn = obj['cn'];
-			            const cnr = obj['cnr'];
-			            const s = obj['s'];
-			            const sr = obj['sr'];
-			            const a = obj['a'];
-			            const ar = obj['ar'];
+			            let cn = obj['cn'];
+			            let cnr = obj['cnr'];
+			            let s = obj['s'];
+			            let sr = obj['sr'];
+			            let a = obj['a'];
+			            let ar = obj['ar'];
 
 			            cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
 			            cn.price = cnr.price;

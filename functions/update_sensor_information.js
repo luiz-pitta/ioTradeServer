@@ -52,8 +52,8 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 			        title_sensor: sensor.title,
 			        category_sensor: sensor.category,
 			        grade_sensor: sensor.grade,
-			        title__conection: connect.title,
-			        category__conection: connect.category,
+			        title_conection: connect.title,
+			        category_conection: connect.category,
 			        grade_conection: connect.grade
 			    },
 			    lean: true
