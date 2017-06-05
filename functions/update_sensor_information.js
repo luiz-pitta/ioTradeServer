@@ -40,9 +40,15 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 					+"r.sum = r.sum + {grade_sensor}, "
 					+"sr.sum = sr.sum + {grade_conection} ";
 
-		const cypher_analitycs = "MATCH (s:Sensor {title: {title}})-[r:IS_IN]->(g:Group {title: {category}}) "
+		const cypher_analitycs = "MATCH (s:Sensor {title: {title_sensor}})-[r:IS_IN]->(g:Group {title: {category_sensor}}) "
+					+"MATCH (c:Conection {title: {title_conection}})-[sr:IS_IN]->(g:Group {title: {category_conection}}) "
+					+"MATCH (a:Analytics {title: {title_analytics}})-[ar:IS_IN]->(g:Group {title: {category_analytics}}) "
 					+"SET r.qty = r.qty + 1, "
-					+"r.sum = r.sum + {grade} ";
+					+"sr.qty = sr.qty + 1, "
+					+"ar.qty = ar.qty + 1, "
+					+"r.sum = r.sum + {grade_sensor}, "
+					+"sr.sum = sr.sum + {grade_conection}, "
+					+"ar.sum = ar.sum + {grade_analytics} ";
 
 		if(analytics == null){
 
@@ -68,9 +74,15 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 			db.cypher({
 			    query: cypher,
 			    params: {
-			        title: title,
-			        category: category,
-			        grade: grade
+			        title_sensor: sensor.title,
+			        category_sensor: sensor.category,
+			        grade_sensor: sensor.rank,
+			        title_conection: connect.title,
+			        category_conection: connect.category,
+			        grade_conection: connect.rank,
+			        title_analytics: analytics.title,
+			        category_analytics: analytics.category,
+			        grade_analytics: analytics.rank
 			    },
 			    lean: true
 			}, (err, results) =>{
