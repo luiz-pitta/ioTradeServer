@@ -33,16 +33,16 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 	
 	new Promise((resolve,reject) => {
 
-		const cypher = "MATCH (s:Sensor {title: {title_sensor}})-[r:IS_IN]->(g:Group {title: {category_sensor}}) "
-					+"MATCH (c:Conection {title: {title_conection}})-[sr:IS_IN]->(g:Group {title: {category_conection}}) "
+		const cypher = "MATCH (s:Sensor {title: {title_sensor}})-[r:IS_IN]->(g1:Group {title: {category_sensor}}) "
+					+"MATCH (c:Conection {title: {title_conection}})-[sr:IS_IN]->(g2:Group {title: {category_conection}}) "
 					+"SET r.qty = r.qty + 1, "
 					+"sr.qty = sr.qty + 1, "
 					+"r.sum = r.sum + {grade_sensor}, "
 					+"sr.sum = sr.sum + {grade_conection} ";
 
-		const cypher_analitycs = "MATCH (s:Sensor {title: {title_sensor}})-[r:IS_IN]->(g:Group {title: {category_sensor}}) "
-					+"MATCH (c:Conection {title: {title_conection}})-[sr:IS_IN]->(g:Group {title: {category_conection}}) "
-					+"MATCH (a:Analytics {title: {title_analytics}})-[ar:IS_IN]->(g:Group {title: {category_analytics}}) "
+		const cypher_analitycs = "MATCH (s:Sensor {title: {title_sensor}})-[r:IS_IN]->(g1:Group {title: {category_sensor}}) "
+					+"MATCH (c:Conection {title: {title_conection}})-[sr:IS_IN]->(g2:Group {title: {category_conection}}) "
+					+"MATCH (a:Analytics {title: {title_analytics}})-[ar:IS_IN]->(g3:Group {title: {category_analytics}}) "
 					+"SET r.qty = r.qty + 1, "
 					+"sr.qty = sr.qty + 1, "
 					+"ar.qty = ar.qty + 1, "
