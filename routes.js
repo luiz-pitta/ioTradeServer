@@ -47,11 +47,11 @@ module.exports = router => {
 
 	router.post('/update_sensor_rating', (req, res) => {
 
-		const title = req.body.title;
-		const category = req.body.category;
-		const grade = req.body.rank;
+		const sensor = req.body.sensor;
+		const connect = req.body.connect;
+		const analytics = req.body.analytics;
 
-		update_sensor_information.updateSensorRating(title, category, grade)
+		update_sensor_information.updateSensorRating(sensor, connect, analytics)
 
 		.then(result => res.json({ message: result.message }))
 
