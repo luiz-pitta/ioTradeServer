@@ -50,6 +50,8 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 					+"sr.sum = sr.sum + {grade_conection}, "
 					+"ar.sum = ar.sum + {grade_analytics} ";
 
+		console.log(analytics);
+
 		if(analytics == null){
 
 			db.cypher({
