@@ -51,10 +51,10 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 			    params: {
 			        title_sensor: sensor.title,
 			        category_sensor: sensor.category,
-			        grade_sensor: sensor.grade,
+			        grade_sensor: sensor.rank,
 			        title_conection: connect.title,
 			        category_conection: connect.category,
-			        grade_conection: connect.grade
+			        grade_conection: connect.rank
 			    },
 			    lean: true
 			}, (err, results) =>{
