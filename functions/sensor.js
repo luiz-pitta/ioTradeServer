@@ -39,7 +39,7 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					+"MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}}) "
 					+"MATCH (s)-[sr:IS_IN]->(g:Group) MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
 					+"WHERE (sr.price + cnr.price) <= you.budget "
-					+"RETURN cn, s, sr, cnr ORDER BY cn.title";
+					+"RETURN cn, s, sr, cnr, g.title, g2.title ORDER BY cn.title";
 
 		db.cypher({
 		    query: cypher,
@@ -64,6 +64,7 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 
 			    		cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
 			            cn.price = cnr.price;
+			            cn.category = obj['g2.title'];
 
 			    		let cn_next = obj_next['cn'];
 
@@ -74,6 +75,7 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 			    			let sr = obj_next['sr'];
 			    			s.rank = parseFloat(sr.sum)/parseFloat(sr.qty);
 			            	s.price = sr.price;
+			            	s.category = obj_next['g.title'];
 			            	cn.array.push(s);
 
 							j++;
@@ -167,7 +169,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					+"MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
 					+"MATCH (a)-[ar:IS_IN]->(g3:Group) "
 					+"WHERE (sr.price + cnr.price + ar.price) <= you.budget "
-					+"RETURN cn, cnr, s, sr, a ,ar ORDER BY cn.title, s.title, a.title";
+					+"RETURN cn, cnr, s, sr, a ,ar, g.title, g2.title, g3.title ORDER BY cn.title, s.title, a.title";
 
 		db.cypher({
 		    query: cypher,
@@ -193,10 +195,13 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 
 			            cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
 			            cn.price = cnr.price;
+			            cn.category = obj['g2.title'];
 			            s.rank = parseFloat(sr.sum)/parseFloat(sr.qty);
 			            s.price = sr.price;
+			            s.category = obj['g.title'];
 			            a.rank = parseFloat(ar.sum)/parseFloat(ar.qty);
 			            a.price = ar.price;
+			            a.category = obj['g3.title'];
 
 			            cn.sensor = s;
 			            cn.analytics = a;
