@@ -1,7 +1,19 @@
 'use strict';
+/**
+ * Módulo que faz retorna os sensores que estão próximos ao usuário
+ *
+ * @author Luiz Guilherme Pitta
+ */
 
 const db = require('../models/Connection');
 
+ /**
+ * @param lat1 latitude ponto 1.
+ * @param lon1 longitude ponto 1.
+ * @param lat2 latitude ponto 2.
+ * @param lon2 longitude ponto 2.
+ * @return Retorna a distância entre dois pontos
+ */
 function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
   const R = 6371; // Radius of the earth in km
   const dLat = deg2rad(lat2-lat1);  // deg2rad below
@@ -17,10 +29,17 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
   return d;
 }
 
+/**
+ * @param deg grau.
+ * @return Retorna a conversão de graus para radianos
+ */
 function deg2rad(deg) {
   return deg * (Math.PI/180);
 }
 
+/**
+ * @return Retorna as informações dos serviços.
+ */
 exports.getServices = (lat, lng) => 
 	
 	new Promise((resolve,reject) => {

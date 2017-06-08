@@ -1,7 +1,15 @@
 'use strict';
+/**
+ * Módulo que faz retorna as informações de todos os sensores 
+ *
+ * @author Luiz Guilherme Pitta
+ */
 
 const db = require('../models/Connection');
 
+/**
+ * @return Retorna as informações dos sensores.
+ */
 exports.getSensorPriceInformation = () => 
 	
 	new Promise((resolve,reject) => {

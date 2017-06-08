@@ -1,6 +1,19 @@
 'use strict';
+/**
+ * Módulo que roda o algoritmo de matchmaking
+ *
+ * @author Luiz Guilherme Pitta
+ */
 
 const db = require('../models/Connection');
+
+ /**
+ * @param lat1 latitude ponto 1.
+ * @param lon1 longitude ponto 1.
+ * @param lat2 latitude ponto 2.
+ * @param lon2 longitude ponto 2.
+ * @return Retorna a distância entre dois pontos
+ */
 
 function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
   const R = 6371; // Radius of the earth in km
@@ -17,15 +30,27 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
   return d;
 }
 
+/**
+ * @param deg grau.
+ * @return Retorna a conversão de graus para radianos
+ */
 function deg2rad(deg) {
   return deg * (Math.PI/180);
 }
 
+/**
+ * @param min Número mínimo.
+ * @param max Número máximo.
+ * @return Retorna um número aleatório entre o {min,max} recebidos como parâmetro
+ */
 function randomIntFromInterval(min,max)
 {
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
+/**
+ * @return Retorna os serviços sem analytics do algoritmo de matchmaking.
+ */
 exports.getSensorAlgorithm = (lat, lng, category) => 
 	
 	new Promise((resolve,reject) => {
@@ -154,7 +179,9 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 
 	});
 
-
+/**
+ * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+ */
 exports.getSensorAlgorithmAnalytics = (lat, lng, category) => 
 	
 	new Promise((resolve,reject) => {
