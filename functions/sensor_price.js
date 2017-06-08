@@ -8,6 +8,12 @@
 const db = require('../models/Connection');
 
 /**
+ * Módulo para assertivas
+ */
+const chai = require('chai'); 
+const assert = chai.assert; 
+
+/**
  * @return Retorna as informações dos sensores.
  */
 exports.getSensorPriceInformation = () => 

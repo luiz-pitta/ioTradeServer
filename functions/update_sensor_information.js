@@ -10,6 +10,12 @@
 const db = require('../models/Connection');
 
 /**
+ * Módulo para assertivas
+ */
+const chai = require('chai'); 
+const assert = chai.assert;  
+
+/**
  * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
  */
 exports.updateSensorInformation = (title, price, category, category_new) => 

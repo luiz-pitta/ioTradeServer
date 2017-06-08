@@ -7,6 +7,12 @@
 
 const db = require('../models/Connection');
 
+/**
+ * Módulo para assertivas
+ */
+const chai = require('chai'); 
+const assert = chai.assert;  
+
  /**
  * @param lat1 latitude ponto 1.
  * @param lon1 longitude ponto 1.

@@ -8,6 +8,12 @@
 const db = require('../models/Connection');
 
 /**
+ * Módulo para assertivas
+ */
+const chai = require('chai'); 
+const assert = chai.assert; 
+
+/**
  * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
  */
 exports.updateUserBudget = (price) => 
@@ -26,6 +32,19 @@ exports.updateUserBudget = (price) =>
 		    },
 		    lean: true
 		}, (err, results) =>{
+
+			try{
+				assert.notExists(err, 'Sem erro!');
+			}catch(err){
+				console.log(err.message);
+			}
+
+			try{
+					assert.isDefined(results, 'Resultado Retornado!');
+				}catch(err){
+					console.log(err.message);
+				}
+
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else
