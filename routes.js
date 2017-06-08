@@ -29,7 +29,7 @@ const config = require('./config/config.json');
 const db = require('./models/Connection');
 
 try{
-	asset('a'==='b', 'foo is not bar');
+	assert('a'==='b', 'foo is not bar');
 }catch(err){
 	console.log(err.message);
 }
