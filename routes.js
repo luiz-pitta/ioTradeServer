@@ -31,6 +31,7 @@ const assert = chai.assert;    // Using Assert style
 
 
 assert('foo' !== 'bar', 'foo is not bar');
+assert.isOk(false, 'this will fail');
 
 
 module.exports = router => {
