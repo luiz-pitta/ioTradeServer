@@ -1,7 +1,15 @@
 'use strict';
+/**
+ * Módulo que faz a atualização do dado de orçamento de um usuário
+ *
+ * @author Luiz Guilherme Pitta
+ */
 
 const db = require('../models/Connection');
 
+/**
+ * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+ */
 exports.updateUserBudget = (price) => 
 	
 	new Promise((resolve,reject) => {

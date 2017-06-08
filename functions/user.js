@@ -1,7 +1,16 @@
 'use strict';
 
+/**
+ * Módulo que retorna as informações do usuário para a aplicação cliente
+ *
+ * @author Luiz Guilherme Pitta
+ */
+
 const db = require('../models/Connection');
 
+/**
+ * @return Retorna o usuário do servidor.
+ */
 exports.getProfile = () => 
 	
 	new Promise((resolve,reject) => {

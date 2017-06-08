@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * Módulo que cria a conexão com o Banco de Dados Neo4j
+ *
+ * @author Luiz Guilherme Pitta
+ */
+
 const neo4j = require('neo4j');
 const url = require('url').parse(process.env.GRAPHENEDB_URL);
 

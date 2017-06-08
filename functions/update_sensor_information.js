@@ -1,7 +1,17 @@
 'use strict';
 
+/**
+ * Módulo que faz a atualização dos dados de sensores e ranking dos serviços
+ *
+ * @author Luiz Guilherme Pitta
+ */
+
+
 const db = require('../models/Connection');
 
+/**
+ * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+ */
 exports.updateSensorInformation = (title, price, category, category_new) => 
 	
 	new Promise((resolve,reject) => {
@@ -28,7 +38,9 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 
 	});
 
-
+/**
+ * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+ */
 exports.updateSensorRating = (sensor, connect, analytics) => 
 	
 	new Promise((resolve,reject) => {

@@ -1,23 +1,42 @@
 'use strict';
 
+/**
+ * Módulo que faz o roteamento das solicitações para os determinados submodulos correspondentes
+ *
+ * @author Luiz Guilherme Pitta
+ */
+
+/**
+ * Variáveis externas (bibliotecas)
+ */
 const auth = require('basic-auth');
 const jwt = require('jsonwebtoken');
 const schedule = require('node-schedule');
 
+/**
+ * Variáveis da aplicação
+ */
 const sensor_price = require('./functions/sensor_price');
 const get_user = require('./functions/user');
 const get_services = require('./functions/services');
 const update_user_budget = require('./functions/update_budget_user');
 const update_sensor_information = require('./functions/update_sensor_information');
 const get_sensor_matchmaking = require('./functions/sensor');
-
 const config = require('./config/config.json');
 const db = require('./models/Connection');
+const assert = chai.assert;    // Using Assert style 
+
+
+assert('foo' !== 'bar', 'foo is not bar');
+
 
 module.exports = router => {
 
 	router.get('/', (req, res) => res.end('IoTrade!'));
 
+	/**
+     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     */
 	router.post('/update_user_budget', (req, res) => {
 
 		const price = req.body.price;
@@ -30,6 +49,9 @@ module.exports = router => {
 		
 	});
 
+	/**
+     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     */
 	router.post('/update_sensor_information', (req, res) => {
 
 		const price = req.body.price;
@@ -45,6 +67,9 @@ module.exports = router => {
 		
 	});
 
+	/**
+     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     */
 	router.post('/update_sensor_rating', (req, res) => {
 
 		const sensor = req.body.sensor;
@@ -59,16 +84,9 @@ module.exports = router => {
 		
 	});
 
-	router.get('/tags', (req,res) => {
-
-			sensor_price.getSensorPriceInformation()
-
-			.then(result => res.json(result.return))
-
-			.catch(err => res.status(err.status).json({ message: err.message }));
-	});
-
-
+	/**
+     * @return Retorna as informações dos sensores.
+     */
 	router.get('/get_sensor_price_information', (req,res) => {
 
 		sensor_price.getSensorPriceInformation()
@@ -78,6 +96,9 @@ module.exports = router => {
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
 
+	/**
+     * @return Retorna as informações dos serviços.
+     */
 	router.post('/get_services_information', (req,res) => {
 
 		const lat = req.body.lat;
@@ -90,6 +111,9 @@ module.exports = router => {
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
 
+	/**
+     * @return Retorna os serviços sem analytics do algoritmo de matchmaking.
+     */
 	router.post('/get_sensor_matchmaking', (req,res) => {
 
 		const lat = req.body.lat;
@@ -104,6 +128,9 @@ module.exports = router => {
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
 
+	/**
+     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     */
 	router.post('/get_sensor_matchmaking_analytics', (req,res) => {
 
 		const lat = req.body.lat;
@@ -118,6 +145,9 @@ module.exports = router => {
 		.catch(err => res.status(err.status).json({ message: err.message }));
 	});
 
+	/**
+     * @return Retorna o usuário do servidor.
+     */
 	router.get('/get_user', (req,res) => {
 
 		get_user.getProfile()
