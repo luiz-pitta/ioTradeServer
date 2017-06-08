@@ -72,6 +72,25 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					+"WHERE (sr.price + cnr.price) <= you.budget "
 					+"RETURN cn, s, sr, cnr, g.title, g2.title ORDER BY cn.title";
 
+		try{
+			assert.isDefined(lat, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+		
+		try{
+			assert.isDefined(lng, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+
+		try{
+			assert.isDefined(category, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+						
+
 		db.cypher({
 		    query: cypher,
 		    params: {
@@ -79,10 +98,22 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		    },
 		    lean: true
 		}, (err, results) =>{
+			try{
+				assert.notExists(err, 'Sem erro!');
+			}catch(err){
+				console.log(err.message);
+			}
+
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
 		    	let i, j;
+
+		    	try{
+					assert.isDefined(results, 'Vetor Existe!');
+				}catch(err){
+					console.log(err.message);
+				}
 
 		    	if(results && results.length > 0){
 
@@ -175,6 +206,18 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 			        		sensor_chosen = sensors_final[0];
 			    	}
 
+			    	try{
+						assert.exists(sensor_chosen, 'Variável Existe!');
+					}catch(err){
+						console.log(err.message);
+					}
+
+					try{
+						assert.exists(connect_chosen, 'Variável Existe!');
+					}catch(err){
+						console.log(err.message);
+					}
+
 					resolve({ status: 201, sensor: sensor_chosen, connect: connect_chosen });
 				}else
 					resolve({ status: 201, sensor: null, connect: null });
@@ -204,6 +247,24 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					+"WHERE (sr.price + cnr.price + ar.price) <= you.budget "
 					+"RETURN cn, cnr, s, sr, a ,ar, g.title, g2.title, g3.title ORDER BY cn.title, s.title, a.title";
 
+		try{
+			assert.isDefined(lat, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+		
+		try{
+			assert.isDefined(lng, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+
+		try{
+			assert.isDefined(category, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}			
+
 		db.cypher({
 		    query: cypher,
 		    params: {
@@ -211,10 +272,23 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 		    },
 		    lean: true
 		}, (err, results) =>{
+
+			try{
+				assert.notExists(err, 'Sem erro!');
+			}catch(err){
+				console.log(err.message);
+			}
+			
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
 		    	let i, j;
+
+		    	try{
+					assert.isDefined(results, 'Vetor Existe!');
+				}catch(err){
+					console.log(err.message);
+				}
 
 		    	if(results && results.length > 0){
 
@@ -284,6 +358,24 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					});
 
 					chosen_group = sensors[0];
+
+					try{
+						assert.exists(chosen_group.sensor, 'Variável Existe!');
+					}catch(err){
+						console.log(err.message);
+					}
+
+					try{
+						assert.exists(chosen_group, 'Variável Existe!');
+					}catch(err){
+						console.log(err.message);
+					}
+
+					try{
+						assert.exists(chosen_group.analytics, 'Variável Existe!');
+					}catch(err){
+						console.log(err.message);
+					}
 
 
 					resolve({ status: 201, sensor: chosen_group.sensor, connect: chosen_group, analytics : chosen_group.analytics });

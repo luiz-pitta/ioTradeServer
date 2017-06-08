@@ -29,9 +29,23 @@ exports.getSensorPriceInformation = () =>
 		    query: cypher,
 		    lean: true
 		}, (err, results) =>{
+
+			try{
+				assert.notExists(err, 'Sem erro!');
+			}catch(err){
+				console.log(err.message);
+			}
+
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
+
+		    	try{
+					assert.isDefined(results, 'Vetor Existe!');
+				}catch(err){
+					console.log(err.message);
+				}
+
 		    	results.forEach(function (obj) {
 		            let s = obj['s'];
 		            const price_sensor = obj['r.price'];
@@ -42,6 +56,12 @@ exports.getSensorPriceInformation = () =>
 
 		            sensorPriceArray.push(s);
 		        });
+		        
+		        try{
+					assert.exists(user, 'Vetor Existe!');
+				}catch(err){
+					console.log(err.message);
+				}
 
 				resolve({ status: 201, sensorPriceArray: sensorPriceArray });
 		    }

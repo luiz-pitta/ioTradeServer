@@ -40,10 +40,10 @@ exports.updateUserBudget = (price) =>
 			}
 
 			try{
-					assert.isDefined(results, 'Resultado Retornado!');
-				}catch(err){
-					console.log(err.message);
-				}
+				assert.isDefined(results, 'Resultado Retornado!');
+			}catch(err){
+				console.log(err.message);
+			}
 
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });

@@ -25,6 +25,30 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 		const cypher = "MATCH (s:Sensor {title: {title}})-[r:IS_IN]->(g:Group {title: {category}}) MERGE (g2:Group {title: {category_new}}) "
 					+"MERGE (s)-[:IS_IN {price: {price}, qty:r.qty, sum:r.sum}]->(g2) DELETE r ";
 
+		try{
+			assert.isDefined(title, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+		
+		try{
+			assert.isDefined(price, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+
+		try{
+			assert.isDefined(category, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+
+		try{
+			assert.isDefined(category_new, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}			
+
 		db.cypher({
 		    query: cypher,
 		    params: {
@@ -35,6 +59,13 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 		    },
 		    lean: true
 		}, (err, results) =>{
+
+			try{
+				assert.notExists(err, 'Sem erro!');
+			}catch(err){
+				console.log(err.message);
+			}
+
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else
@@ -68,7 +99,23 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 					+"sr.sum = sr.sum + {grade_conection}, "
 					+"ar.sum = ar.sum + {grade_analytics} ";
 
-		console.log(analytics);
+		try{
+			assert.isDefined(sensor, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+		
+		try{
+			assert.isDefined(connect, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+
+		try{
+			assert.isDefined(analytics, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
 
 		if(analytics == null){
 
@@ -84,6 +131,12 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 			    },
 			    lean: true
 			}, (err, results) =>{
+				try{
+					assert.notExists(err, 'Sem erro!');
+				}catch(err){
+					console.log(err.message);
+				}
+
 				if (err) 
 			    	reject({ status: 500, message: 'Internal Server Error !' });
 			    else
@@ -106,6 +159,13 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 			    },
 			    lean: true
 			}, (err, results) =>{
+
+				try{
+					assert.notExists(err, 'Sem erro!');
+				}catch(err){
+					console.log(err.message);
+				}
+				
 				if (err) 
 			    	reject({ status: 500, message: 'Internal Server Error !' });
 			    else

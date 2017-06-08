@@ -55,13 +55,38 @@ exports.getServices = (lat, lng) =>
 		const cypher = "MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category) "
 					+"RETURN cn, c ";
 
+		try{
+			assert.isDefined(lat, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}
+		
+		try{
+			assert.isDefined(lng, 'Variável Existe!');
+		}catch(err){
+			console.log(err.message);
+		}			
+
 		db.cypher({
 		    query: cypher,
 		    lean: true
 		}, (err, results) =>{
+
+			try{
+				assert.notExists(err, 'Sem erro!');
+			}catch(err){
+				console.log(err.message);
+			}
+
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
+		    	try{
+					assert.isDefined(results, 'Vetor Existe!');
+				}catch(err){
+					console.log(err.message);
+				}
+
 		    	results.forEach(function (obj) {
 		            const p = obj['cn'];
 		            const c = obj['c'];
@@ -70,6 +95,12 @@ exports.getServices = (lat, lng) =>
 		            	categories.push(c.title);
 		            
 		        });
+
+		        try{
+					assert.exists(categories, 'Variável Existe!');
+				}catch(err){
+					console.log(err.message);
+				}
 
 				resolve({ status: 201, categories: categories });
 		    }
