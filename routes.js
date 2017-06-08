@@ -29,10 +29,6 @@ const db = require('./models/Connection');
 const chai = require('chai'); 
 const assert = chai.assert;    // Using Assert style 
 
-
-assert('foo' === 'bar', 'foo is not bar');
-
-
 module.exports = router => {
 
 	router.get('/', (req, res) => res.end('IoTrade!'));
