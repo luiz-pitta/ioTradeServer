@@ -22,8 +22,11 @@ const get_services = require('./functions/services');
 const update_user_budget = require('./functions/update_budget_user');
 const update_sensor_information = require('./functions/update_sensor_information');
 const get_sensor_matchmaking = require('./functions/sensor');
+
 const config = require('./config/config.json');
 const db = require('./models/Connection');
+
+const chai = require('chai'); 
 const assert = chai.assert;    // Using Assert style 
 
 
