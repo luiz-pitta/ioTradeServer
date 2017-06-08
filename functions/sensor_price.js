@@ -58,7 +58,7 @@ exports.getSensorPriceInformation = () =>
 		        });
 		        
 		        try{
-					assert.exists(user, 'Vetor Existe!');
+					assert.exists(sensorPriceArray, 'Vetor Existe!');
 				}catch(err){
 					console.log(err.message);
 				}
