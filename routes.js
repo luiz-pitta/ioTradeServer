@@ -12,6 +12,8 @@
 const auth = require('basic-auth');
 const jwt = require('jsonwebtoken');
 const schedule = require('node-schedule');
+const chai = require('chai'); 
+const assert = chai.assert;   
 
 /**
  * Variáveis da aplicação
@@ -26,8 +28,12 @@ const get_sensor_matchmaking = require('./functions/sensor');
 const config = require('./config/config.json');
 const db = require('./models/Connection');
 
-const chai = require('chai'); 
-const assert = chai.assert;    // Using Assert style 
+try{
+	asset('a'==='b', 'foo is not bar');
+}catch(err){
+	console.log(err.message);
+}
+ 
 
 module.exports = router => {
 
