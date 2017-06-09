@@ -141,6 +141,12 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 			    		let cn_next = obj_next['cn'];
 
 			    		cn.array = [];
+
+			    		let dis = obj['result'];
+						if(dis == 1){
+							console.log("passei " + i);
+							break;
+						}
 		
 			    		while(cn.title == cn_next.title){
 			    			let s = obj_next['s'];
@@ -160,11 +166,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 							}
 						}
 						i=j-1;
-
-						let dis = obj['result'];
-						if(dis == 1){
-							console.log("passei " + i);
-						}
 
 						if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5){
 							cn.array.sort(function(a,b) {  
