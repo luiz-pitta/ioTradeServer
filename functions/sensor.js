@@ -71,9 +71,9 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					+"MATCH (s)-[sr:IS_IN]->(g:Group) MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
 					+"WHERE (sr.price + cnr.price) <= you.budget AND cn.sgnl_net >= 3 AND cn.batery >= 60 "
 
-					+"WITH sin(radians(cn.lat-(-22.925420))/2)*sin(radians(cn.lat-(-22.925420))/2) + "
-					+"sin(radians(cn.lng-(-43.259330))/2)*sin(radians(cn.lng-(-43.259330))/2)* "
-					+"cos(radians(-22.925419))*cos(radians(cn.lat)) as d, cn, s, sr, cnr, g, g2 "
+					+"WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
+					+"sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
+					+"cos(radians({lat}))*cos(radians(cn.lat)) as d, cn, s, sr, cnr, g, g2 "
 
 					+"WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, s, sr, cnr, g, g2 "
 
@@ -104,7 +104,9 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		db.cypher({
 		    query: cypher,
 		    params: {
-	            category: category											
+	            category: category,
+	            lat: lat,
+	            lng: lng											
 		    },
 		    lean: true
 		}, (err, results) =>{
@@ -134,6 +136,9 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 			    		let cn = obj['cn'];
 			    		let cnr = obj['cnr'];
 
+			    		if(obj['result'] == 1)
+							break;
+
 			    		cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
 			            cn.price = cnr.price;
 			            cn.category = obj['g2.title'];
@@ -142,10 +147,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 
 			    		cn.array = [];
 
-						if(obj['result'] == 1)
-							break;
-						
-		
 			    		while(cn.title == cn_next.title){
 			    			let s = obj_next['s'];
 			    			let sr = obj_next['sr'];
@@ -165,24 +166,21 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 						}
 						i=j-1;
 
-						if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5){
-							cn.array.sort(function(a,b) {  
-							    if (a.rank < b.rank)
-				                    return 1;
-				                else if (a.rank > b.rank)
-				                    return -1;
-				                else if (a.price < b.price)
-				                    return -1;
-				                else if (a.price > b.price)
-				                	return 1;
-				                else
-				                	return 0;
-							});
-			            	sensors.push(cn);
-						}
+						cn.array.sort(function(a,b) {  
+						    if (a.rank < b.rank)
+			                    return 1;
+			                else if (a.rank > b.rank)
+			                    return -1;
+			                else if (a.price < b.price)
+			                    return -1;
+			                else if (a.price > b.price)
+			                	return 1;
+			                else
+			                	return 0;
+						});
+		            	sensors.push(cn);
+						
 			    	}
-
-			    	console.log("passei " + i);
 
 			    	sensors.sort(function(a,b) {  
 					    if (a.rank < b.rank)
@@ -261,7 +259,18 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					+"MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
 					+"MATCH (a)-[ar:IS_IN]->(g3:Group) "
 					+"WHERE (sr.price + cnr.price + ar.price) <= you.budget AND cn.sgnl_net >= 3 AND cn.batery >= 60 "
-					+"RETURN cn, cnr, s, sr, a ,ar, g.title, g2.title, g3.title ORDER BY cn.title, s.title, a.title";
+
+					+"WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
+					+"sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
+					+"cos(radians({lat}))*cos(radians(cn.lat)) as d, cn, s, sr, cnr, g, g2, g3, a ,ar "
+
+					+"WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, s, sr, cnr, g, g2, g3, a ,ar "
+
+					+"RETURN cn, s, a ,ar, sr, cnr, g.title, g2.title, g3.title, "
+					+"CASE "
+					+"WHEN da < 1.5 then -1 "
+					+"ELSE 1 END AS result ORDER BY result, cn.title, s.title, a.title ";
+
 
 		try{
 			assert.isDefined(lat, 'Variável Existe!');
@@ -284,7 +293,9 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 		db.cypher({
 		    query: cypher,
 		    params: {
-	            category: category											
+	            category: category,
+	            lat: lat,
+	            lng: lng											
 		    },
 		    lean: true
 		}, (err, results) =>{
@@ -298,7 +309,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
-		    	let i, j;
+		    	let i;
 
 		    	try{
 					assert.isDefined(results, 'Vetor Existe!');
@@ -308,13 +319,19 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 
 		    	if(results && results.length > 0){
 
-			    	results.forEach(function (obj) {
-			            let cn = obj['cn'];
+		    		for(i=0;i<results.length;i++){
+			    		let obj = results[i];
+			    		let cn = obj['cn'];
 			            let cnr = obj['cnr'];
 			            let s = obj['s'];
 			            let sr = obj['sr'];
 			            let a = obj['a'];
 			            let ar = obj['ar'];
+
+
+			            if(obj['result'] == 1)
+							break;
+
 
 			            cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
 			            cn.price = cnr.price;
@@ -329,10 +346,9 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 			            cn.sensor = s;
 			            cn.analytics = a;
 
-			            if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5)
-			            	sensors.push(cn);
-			            
-			        });
+			            sensors.push(cn);
+
+			    	}
 
 			    	sensors.sort(function(a,b) {  
 					    if (a.rank < b.rank)
