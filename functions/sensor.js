@@ -13,37 +13,6 @@ const db = require('../models/Connection');
 const chai = require('chai'); 
 const assert = chai.assert;  
 
- /**
- * @param lat1 latitude ponto 1.
- * @param lon1 longitude ponto 1.
- * @param lat2 latitude ponto 2.
- * @param lon2 longitude ponto 2.
- * @return Retorna a distância entre dois pontos
- */
-
-function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
-  const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(lat2-lat1);  // deg2rad below
-  const dLon = deg2rad(lon2-lon1); 
-  
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2); 
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  const d = R * c; // Distance in km
-  return d;
-}
-
-/**
- * @param deg grau.
- * @return Retorna a conversão de graus para radianos
- */
-function deg2rad(deg) {
-  return deg * (Math.PI/180);
-}
-
 /**
  * @param min Número mínimo.
  * @param max Número máximo.
@@ -127,8 +96,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					console.log(err.message);
 				}
 
-				console.log(results.length);
-
 		    	if(results && results.length > 0){
 
 			    	for(i=0;i<results.length;i++){
@@ -204,8 +171,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		                else
 		                	return 0;
 					});
-
-					console.log(sensors.length);
 
 			    	if(sensors.length > 0){
 						connect_chosen = sensors[0];
@@ -321,8 +286,6 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					console.log(err.message);
 				}
 
-				console.log(results.length);
-
 		    	if(results && results.length > 0){
 
 		    		for(i=0;i<results.length;i++){
@@ -355,8 +318,6 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 			            sensors.push(cn);
 
 			    	}
-
-			    	console.log(sensors.length);
 
 			    	sensors.sort(function(a,b) {  
 					    if (a.rank < b.rank)
