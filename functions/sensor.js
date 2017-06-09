@@ -69,8 +69,18 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		const cypher = "MATCH (you:Profile) "
 					+"MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}}) "
 					+"MATCH (s)-[sr:IS_IN]->(g:Group) MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
-					+"WHERE (sr.price + cnr.price) <= you.budget "
-					+"RETURN cn, s, sr, cnr, g.title, g2.title ORDER BY cn.title";
+					+"WHERE (sr.price + cnr.price) <= you.budget AND cn.sgnl_net >= 3 AND cn.batery >= 60 "
+
+					+"WITH sin(radians(cn.lat-(-22.925420))/2)*sin(radians(cn.lat-(-22.925420))/2) + "
+					+"sin(radians(cn.lng-(-43.259330))/2)*sin(radians(cn.lng-(-43.259330))/2)* "
+					+"cos(radians(-22.925419))*cos(radians(cn.lat)) as d, cn, s, sr, cnr, g, g2 "
+
+					+"WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, s, sr, cnr, g, g2 "
+
+					+"RETURN cn, s, sr, cnr, g.title, g2.title, "
+					+"CASE "
+					+"WHEN da < 1.5 then -1 "
+					+"ELSE 1 END AS result ORDER BY result, cn.title ";
 
 		try{
 			assert.isDefined(lat, 'Variável Existe!');
@@ -150,6 +160,11 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 							}
 						}
 						i=j-1;
+
+						let dis = obj['result'];
+						if(dis == 1){
+							console.log("passei " + i);
+						}
 
 						if(getDistanceFromLatLonInKm(lat, lng, cn.lat, cn.lng) < 1.5){
 							cn.array.sort(function(a,b) {  
@@ -244,7 +259,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					+"MATCH (s)-[sr:IS_IN]->(g:Group)  "
 					+"MATCH (cn)-[cnr:IS_IN]->(g2:Group) "
 					+"MATCH (a)-[ar:IS_IN]->(g3:Group) "
-					+"WHERE (sr.price + cnr.price + ar.price) <= you.budget "
+					+"WHERE (sr.price + cnr.price + ar.price) <= you.budget AND cn.sgnl_net >= 3 AND cn.batery >= 60 "
 					+"RETURN cn, cnr, s, sr, a ,ar, g.title, g2.title, g3.title ORDER BY cn.title, s.title, a.title";
 
 		try{
