@@ -142,11 +142,9 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 
 			    		cn.array = [];
 
-			    		let dis = obj['result'];
-						if(dis == 1){
-							console.log("passei " + i);
+						if(obj['result'] == 1)
 							break;
-						}
+						
 		
 			    		while(cn.title == cn_next.title){
 			    			let s = obj_next['s'];
@@ -183,6 +181,8 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 			            	sensors.push(cn);
 						}
 			    	}
+
+			    	console.log("passei " + i);
 
 			    	sensors.sort(function(a,b) {  
 					    if (a.rank < b.rank)
