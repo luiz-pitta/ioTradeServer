@@ -127,6 +127,8 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					console.log(err.message);
 				}
 
+				console.log(results.length);
+
 		    	if(results && results.length > 0){
 
 			    	for(i=0;i<results.length;i++){
@@ -202,6 +204,8 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 		                else
 		                	return 0;
 					});
+
+					console.log(sensors.length);
 
 			    	if(sensors.length > 0){
 						connect_chosen = sensors[0];
@@ -317,6 +321,8 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					console.log(err.message);
 				}
 
+				console.log(results.length);
+
 		    	if(results && results.length > 0){
 
 		    		for(i=0;i<results.length;i++){
@@ -349,6 +355,8 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 			            sensors.push(cn);
 
 			    	}
+
+			    	console.log(sensors.length);
 
 			    	sensors.sort(function(a,b) {  
 					    if (a.rank < b.rank)
