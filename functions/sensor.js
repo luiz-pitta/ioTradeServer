@@ -105,9 +105,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 			    		let cn = obj['cn'];
 			    		let cnr = obj['cnr'];
 
-			    		if(obj['result'] == 1)
-							break;
-
 			    		cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
 			            cn.price = cnr.price;
 			            cn.category = obj['g2.title'];
@@ -296,11 +293,6 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 			            let sr = obj['sr'];
 			            let a = obj['a'];
 			            let ar = obj['ar'];
-
-
-			            if(obj['result'] == 1)
-							break;
-
 
 			            cn.rank = parseFloat(cnr.sum)/parseFloat(cnr.qty);
 			            cn.price = cnr.price;
