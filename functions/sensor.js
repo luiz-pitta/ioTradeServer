@@ -46,10 +46,10 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 
 					+"WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, s, sr, cnr, g, g2 "
 
-					+"RETURN cn, s, sr, cnr, g.title, g2.title, "
-					+"CASE "
-					+"WHEN da < 1.5 then -1 "
-					+"ELSE 1 END AS result ORDER BY result, cn.title ";
+					+"WHERE da < 1.5 "
+
+					+"RETURN cn, s, sr, cnr, g.title, g2.title ORDER BY cn.title ";
+
 
 		try{
 			assert.isDefined(lat, 'Variável Existe!');
@@ -235,10 +235,9 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 
 					+"WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, s, sr, cnr, g, g2, g3, a ,ar "
 
-					+"RETURN cn, s, a ,ar, sr, cnr, g.title, g2.title, g3.title, "
-					+"CASE "
-					+"WHEN da < 1.5 then -1 "
-					+"ELSE 1 END AS result ORDER BY result, cn.title, s.title, a.title ";
+					+"WHERE da < 1.5 "
+
+					+"RETURN cn, s, a ,ar, sr, cnr, g.title, g2.title, g3.title ORDER BY cn.title, s.title, a.title ";
 
 
 		try{
@@ -285,6 +284,8 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 				}catch(err){
 					console.log(err.message);
 				}
+
+				console.log(results.length)
 
 		    	if(results && results.length > 0){
 
