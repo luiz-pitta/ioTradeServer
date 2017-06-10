@@ -96,8 +96,6 @@ exports.getSensorAlgorithm = (lat, lng, category) =>
 					console.log(err.message);
 				}
 
-				console.log(results.length)
-
 		    	if(results && results.length > 0){
 
 			    	for(i=0;i<results.length;i++){
@@ -287,7 +285,6 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category) =>
 					console.log(err.message);
 				}
 
-				console.log(results.length)
 
 		    	if(results && results.length > 0){
 
