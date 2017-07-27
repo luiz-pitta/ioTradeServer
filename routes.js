@@ -71,7 +71,7 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
 
     const cypher = "MATCH (o1:Owner {name:{owner}}) "
             + "MATCH (g1:Group {title:{group}}) "
-            //+ "MATCH (s1:Sensor) "
+            + "MATCH (s1:Sensor) "
             + "FOREACH (r IN range(1,20) | MERGE (c1:Conection { "
             + "title: {title} + r, "
             + "lat:-22.925419, "
@@ -79,7 +79,7 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
             + "batery: round(rand()*100 + 1), "
             + "sgnl_net: round(rand()*4 + 1) }) "
             + "MERGE (c1)-[:IS_IN {price:3,sum:5,qty:1}]->(g1)  "
-            //+ "MERGE (c1)-[:IS_NEAR]->(s1)  "
+            + "MERGE (c1)-[:IS_NEAR]->(s1)  "
             + "MERGE (o1)-[:OWNS]->(c1) ) ";
 
     /*db.cypher({
@@ -98,6 +98,30 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
     });*/
 
 });
+
+/*const job_change = schedule.scheduleJob(job_change, function(){
+
+    const cypher = "MATCH (s1:Sensor)-[r:IS_IN]->(g1:Group) "
+            + "MATCH (c1:Conection) "
+            + "SET c1.batery = round(rand()*100 + 1), "
+            + "c1.sgnl_net = round(rand()*4 + 1) ";
+
+    db.cypher({
+        query: cypher,
+        params: {
+            owner: "Pitta",
+            group: "C1",
+            title: "Conectividade " + rand_con + "_" 
+        },
+        lean: true
+    }, (err, results) =>{
+        if (err) 
+            console.log('INTERNAL_SERVER_ERROR');
+        else
+            console.log('Foi 123!');
+    });
+
+});*/
 
 
 module.exports = router => {
