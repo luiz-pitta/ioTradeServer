@@ -82,7 +82,7 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
             + "MERGE (c1)-[:IS_NEAR]->(s1)  "
             + "MERGE (o1)-[:OWNS]->(c1) ) ";
 
-    db.cypher({
+    /*db.cypher({
         query: cypher,
         params: {
             owner: "Pitta",
@@ -95,7 +95,7 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
             console.log('INTERNAL_SERVER_ERROR');
         else
             console.log('Foi 123!');
-    });
+    });*/
 
 });
 
