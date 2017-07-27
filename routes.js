@@ -34,15 +34,15 @@ rule_sensor.second = [0, 30];
 
 const job_sensor = schedule.scheduleJob(rule_sensor, function(){
 
-    //let rand_sen = Math.floor((Math.random() * 100000) + 1);
+    let rand_sen = Math.floor((Math.random() * 100000) + 1);
 
     const cypher = "MATCH (o1:Owner {name:{owner}})  "
             + "MATCH (c1:Category {title:{temperature}}) MATCH (g1:Group {title:{group}})  "
             + "FOREACH (r IN range(1,20) | MERGE (s1:Sensor { "
-            + "title: {sensor}, "
-            + "description:{description} "
-            + "}) MERGE (o1)-[:OWNS]->(s1)  "
-            + "MERGE (s1)-[:BELONGS_TO]->(c1)  "
+            + "title: {sensor} + r, "
+            + "description:{description} }) "
+            + "MERGE (o1)-[:OWNS]->(s1) "
+            + "MERGE (s1)-[:BELONGS_TO]->(c1) "
             + "MERGE (s1)-[:IS_IN {price:2.5, sum: 5, qty:1}]->(g1) ) ";
 
     db.cypher({
@@ -50,13 +50,16 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
         params: {
             owner: "Pitta",
             temperature: "Temperatura",
+            description: "Mede Temperatura",
             group: "C1",
-            sensor: "A" + Math.floor((Math.random() * 100000) + 1) ,
+            sensor: "A" + rand_sen 
         },
         lean: true
     }, (err, results) =>{
         if (err) 
             console.log('INTERNAL_SERVER_ERROR');
+        else
+            console.log('Foi 123!');
     });
 
     /*const dt = new Date();
