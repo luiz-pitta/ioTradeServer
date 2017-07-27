@@ -45,7 +45,7 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
             + "MERGE (s1)-[:BELONGS_TO]->(c1) "
             + "MERGE (s1)-[:IS_IN {price:2.5, sum: 5, qty:1}]->(g1) ) ";
 
-    db.cypher({
+    /*db.cypher({
         query: cypher,
         params: {
             owner: "Pitta",
@@ -60,26 +60,6 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
             console.log('INTERNAL_SERVER_ERROR');
         else
             console.log('Foi 123!');
-    });
-
-    /*const dt = new Date();
-    dt.setMonth(dt.getMonth() - 6);
-
-    const dt_mili = dt.getTime();
-
-    const cypher = "MATCH (p:Profile)-[:LOGGED_DEVICE]->(d:Device) "
-                +"WHERE d.last_login_date_time <= {last_login_date_time} "
-                +"DETACH DELETE d ";
-
-    db.cypher({
-        query: cypher,
-        params: {
-            last_login_date_time: dt_mili
-        },
-        lean: true
-    }, (err, results) =>{
-        if (err) 
-            console.log("Error deleting devices with more than 6 months of inactivity!");
     });*/
 
 });
