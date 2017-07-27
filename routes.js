@@ -28,6 +28,65 @@ const config = require('./config/config.json');
 const db = require('./models/Connection');
 
 
+let rule_sensor = new schedule.RecurrenceRule();
+rule_sensor.second = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54];
+
+const job_sensor = schedule.scheduleJob(rule_refresh_connected_devices, function(){
+
+    console.log("Sensor 123!");
+
+    /*const dt = new Date();
+    dt.setMonth(dt.getMonth() - 6);
+
+    const dt_mili = dt.getTime();
+
+    const cypher = "MATCH (p:Profile)-[:LOGGED_DEVICE]->(d:Device) "
+                +"WHERE d.last_login_date_time <= {last_login_date_time} "
+                +"DETACH DELETE d ";
+
+    db.cypher({
+        query: cypher,
+        params: {
+            last_login_date_time: dt_mili
+        },
+        lean: true
+    }, (err, results) =>{
+        if (err) 
+            console.log("Error deleting devices with more than 6 months of inactivity!");
+    });*/
+
+});
+
+let rule_connect = new schedule.RecurrenceRule();
+rule_connect.second = [3, 9, 15, 21, 27, 33, 39, 45, 48, 51, 57];
+
+const job_connect = schedule.scheduleJob(rule_refresh_connected_devices, function(){
+
+    console.log("Connect 123!");
+
+    /*const dt = new Date();
+    dt.setMonth(dt.getMonth() - 6);
+
+    const dt_mili = dt.getTime();
+
+    const cypher = "MATCH (p:Profile)-[:LOGGED_DEVICE]->(d:Device) "
+                +"WHERE d.last_login_date_time <= {last_login_date_time} "
+                +"DETACH DELETE d ";
+
+    db.cypher({
+        query: cypher,
+        params: {
+            last_login_date_time: dt_mili
+        },
+        lean: true
+    }, (err, results) =>{
+        if (err) 
+            console.log("Error deleting devices with more than 6 months of inactivity!");
+    });*/
+
+});
+
+
 module.exports = router => {
 
     router.get('/', (req, res) => res.end('IoTrade!'));
