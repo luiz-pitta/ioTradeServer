@@ -36,7 +36,7 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
 
     //let rand_sen = Math.floor((Math.random() * 100000) + 1);
 
-    const cypher_repeat = "MATCH (o1:Owner {name:{owner}})  "
+    const cypher = "MATCH (o1:Owner {name:{owner}})  "
             + "MATCH (c1:Category {title:{temperature}}) MATCH (g1:Group {title:{group}})  "
             + "FOREACH (r IN range(1,20) | MERGE (s1:Sensor { "
             + "title: {sensor}, "
