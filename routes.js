@@ -29,15 +29,14 @@ const db = require('./models/Connection');
 
 
 let rule_sensor = new schedule.RecurrenceRule();
-//rule_sensor.second = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54];
-rule_sensor.second = [0, 30];
+rule_sensor.second = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54];
 
 const job_sensor = schedule.scheduleJob(rule_sensor, function(){
 
     let rand_sen = Math.floor((Math.random() * 100000) + 1);
 
     const cypher = "MATCH (o1:Owner {name:{owner}})  "
-            + "MATCH (c1:Category {title:{temperature}}) MATCH (g1:Group {title:{group}})  "
+            + "MATCH (c1:Category {title:{cat}}) MATCH (g1:Group {title:{group}})  "
             + "FOREACH (r IN range(1,20) | MERGE (s1:Sensor { "
             + "title: {sensor} + r, "
             + "description:{description} }) "
@@ -49,10 +48,10 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
         query: cypher,
         params: {
             owner: "Pitta",
-            temperature: "Temperatura",
+            cat: "Temperatura",
             description: "Mede Temperatura",
             group: "C1",
-            sensor: "A" + rand_sen 
+            sensor: "A" + rand_sen + "_" 
         },
         lean: true
     }, (err, results) =>{
@@ -71,25 +70,31 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
 
     let rand_con = Math.floor((Math.random() * 100000) + 1);
 
-    /*const dt = new Date();
-    dt.setMonth(dt.getMonth() - 6);
-
-    const dt_mili = dt.getTime();
-
-    const cypher = "MATCH (p:Profile)-[:LOGGED_DEVICE]->(d:Device) "
-                +"WHERE d.last_login_date_time <= {last_login_date_time} "
-                +"DETACH DELETE d ";
+    const cypher = "MATCH (o1:Owner {name:{owner}}) "
+            + "MATCH (g1:Group {title:{group}}) "
+            + "FOREACH (r IN range(1,20) | MERGE (c1:Conection { "
+            + "title: {title} + r, "
+            + "lat:-22.925419, "
+            + "lng:-43.259328, "
+            + "batery: round(rand()*100 + 1), "
+            + "sgnl_net: round(rand()*4 + 1) }) "
+            + "MERGE (c1)-[:IS_IN {price:3,sum:5,qty:1}]->(g1)  "
+            + "MERGE (o1)-[:OWNS]->(c1) ) ";
 
     db.cypher({
         query: cypher,
         params: {
-            last_login_date_time: dt_mili
+            owner: "Pitta",
+            group: "C1",
+            title: "Conectividade " + rand_con + "_" 
         },
         lean: true
     }, (err, results) =>{
         if (err) 
-            console.log("Error deleting devices with more than 6 months of inactivity!");
-    });*/
+            console.log('INTERNAL_SERVER_ERROR');
+        else
+            console.log('Foi 123!');
+    });
 
 });
 
