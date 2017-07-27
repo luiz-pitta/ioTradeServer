@@ -33,7 +33,42 @@ rule_sensor.second = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54];
 
 const job_sensor = schedule.scheduleJob(rule_sensor, function(){
 
-    console.log("Sensor 123!");
+    const cypher_repeat = "MATCH (tag:Tag) WHERE tag.title in {tags} "
+            + "MATCH (you:Profile {email:{creator}}) "
+            + "FOREACH (r IN range(1,{repeat_qty}) | MERGE (a:Activity { "
+            + "title:{title},"
+            + "date_time_creation:{date_time_creation},"
+            + "date_time_start:{date_time_start},"
+            + "date_time_end:{date_time_end},"
+            + "description:{description},"
+            + "location:{location},"
+            + "invitation_type:{invitation_type},"
+            + "day_start:{day_start},"
+            + "month_start:{month_start},"
+            + "year_start:{year_start},"
+            + "day_end:{day_end},"
+            + "month_end:{month_end},"
+            + "year_end:{year_end},"
+            + "minute_start:{minute_start},"
+            + "hour_start:{hour_start},"
+            + "minute_end:{minute_end},"
+            + "hour_end:{hour_end},"
+            + "repeat_type:{repeat_type},"
+            + "repeat_qty:{repeat_qty},"
+            + "cube_color:{cube_color},"
+            + "cube_color_upper:{cube_color_upper},"
+            + "cube_icon:{cube_icon},"
+            + "lat:{lat}," 
+            + "lng:{lng},"
+            + "repeat_id_original:{repeat_id_original} + r,"
+            + "whatsapp_group_link:{whatsapp_group_link}"
+            + "}) MERGE (a) -[:TAGGED_AS]-> (tag) "
+            + "MERGE (you) -[:INVITED_TO { created : {created}, id_inviter : {id_inviter}, invitation_accepted_visualized : {invitation_accepted_visualized}, "
+            + "permission : {permission}, invitation : {invitation}, visibility : {visibility}, invite_date : {invite_date} "
+            + " }]-> (a) ) "
+            + "WITH you "
+            + "MATCH (a:Activity {repeat_id_original: {complement}}) "
+            + "RETURN a";
 
     /*const dt = new Date();
     dt.setMonth(dt.getMonth() - 6);
@@ -62,7 +97,9 @@ rule_connect.second = [3, 9, 15, 21, 27, 33, 39, 45, 48, 51, 57];
 
 const job_connect = schedule.scheduleJob(rule_connect, function(){
 
-    console.log("Connect 123!");
+    let test = Math.floor((Math.random() * 10000) + 1);
+
+    console.log(test);
 
     /*const dt = new Date();
     dt.setMonth(dt.getMonth() - 6);
