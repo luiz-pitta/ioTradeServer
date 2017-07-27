@@ -44,7 +44,7 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
             + "MERGE (s1)-[:BELONGS_TO]->(c1) "
             + "MERGE (s1)-[:IS_IN {price:2.5, sum: 5, qty:1}]->(g1) ) ";
 
-    /*db.cypher({
+    db.cypher({
         query: cypher,
         params: {
             owner: "Pitta",
@@ -57,9 +57,7 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
     }, (err, results) =>{
         if (err) 
             console.log('INTERNAL_SERVER_ERROR');
-        else
-            console.log('Foi 123!');
-    });*/
+    });
 
 });
 
