@@ -31,7 +31,7 @@ const db = require('./models/Connection');
 let rule_sensor = new schedule.RecurrenceRule();
 rule_sensor.second = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54];
 
-const job_sensor = schedule.scheduleJob(rule_refresh_connected_devices, function(){
+const job_sensor = schedule.scheduleJob(rule_sensor, function(){
 
     console.log("Sensor 123!");
 
@@ -60,7 +60,7 @@ const job_sensor = schedule.scheduleJob(rule_refresh_connected_devices, function
 let rule_connect = new schedule.RecurrenceRule();
 rule_connect.second = [3, 9, 15, 21, 27, 33, 39, 45, 48, 51, 57];
 
-const job_connect = schedule.scheduleJob(rule_refresh_connected_devices, function(){
+const job_connect = schedule.scheduleJob(rule_connect, function(){
 
     console.log("Connect 123!");
 
