@@ -44,7 +44,7 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
             + "MERGE (s1)-[:BELONGS_TO]->(c1) "
             + "MERGE (s1)-[:IS_IN {price:2.5, sum: 5, qty:1}]->(g1) ) ";
 
-    db.cypher({
+    /*db.cypher({
         query: cypher,
         params: {
             owner: "Pitta",
@@ -57,12 +57,13 @@ const job_sensor = schedule.scheduleJob(rule_sensor, function(){
     }, (err, results) =>{
         if (err) 
             console.log('INTERNAL_SERVER_ERROR');
-    });
+    });*/
 
 });
 
 let rule_connect = new schedule.RecurrenceRule();
-rule_connect.second = [3, 9, 15, 21, 27, 33, 39, 45, 48, 51, 57];
+//rule_connect.second = [3, 9, 15, 21, 27, 33, 39, 45, 48, 51, 57];
+rule_connect.second = [0, 30];
 
 const job_connect = schedule.scheduleJob(rule_connect, function(){
 
@@ -70,6 +71,7 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
 
     const cypher = "MATCH (o1:Owner {name:{owner}}) "
             + "MATCH (g1:Group {title:{group}}) "
+            + "MATCH (s1:Sensor) "
             + "FOREACH (r IN range(1,20) | MERGE (c1:Conection { "
             + "title: {title} + r, "
             + "lat:-22.925419, "
@@ -77,9 +79,10 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
             + "batery: round(rand()*100 + 1), "
             + "sgnl_net: round(rand()*4 + 1) }) "
             + "MERGE (c1)-[:IS_IN {price:3,sum:5,qty:1}]->(g1)  "
+            + "MERGE (c1)-[:IS_NEAR]->(s1)  "
             + "MERGE (o1)-[:OWNS]->(c1) ) ";
 
-    /*db.cypher({
+    db.cypher({
         query: cypher,
         params: {
             owner: "Pitta",
@@ -92,7 +95,7 @@ const job_connect = schedule.scheduleJob(rule_connect, function(){
             console.log('INTERNAL_SERVER_ERROR');
         else
             console.log('Foi 123!');
-    });*/
+    });
 
 });
 
