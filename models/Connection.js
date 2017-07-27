@@ -7,11 +7,11 @@
  */
 
 const neo4j = require('neo4j');
-const config = require('../config/config.json');
+const url = require('url').parse(process.env.GRAPHENEDB_URL);
 
 const db = new neo4j.GraphDatabase({
-		    url: config.url_neo4j,
-		    auth: {username: config.user_neo4j, password: config.pass_neo4j}
+		    url: url.protocol + '//' + url.host,
+		    auth: {username: url.auth.split(':')[0], password: url.auth.split(':')[1]}
 		});
 
-module.exports = db;        
+module.exports = db;         
