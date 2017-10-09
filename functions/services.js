@@ -46,61 +46,43 @@ function deg2rad(deg) {
 /**
  * @return Retorna as informações dos serviços.
  */
-exports.getServices = (lat, lng) => 
+exports.getServices = (lat, lng, radius) => 
 	
 	new Promise((resolve,reject) => {
 
 		let categories =[];
 
-		const cypher = "MATCH (cn:Conection)-[:IS_NEAR]->(s:Sensor)-[:BELONGS_TO]->(c:Category) "
-					+"RETURN cn, c ";
+		const cypher = "MATCH (cn:Connection) WHERE cn.signal >= 5 AND cn.batery >= 30 "
+				+ "WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
+				+ "sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
+				+ "cos(radians({lat}))*cos(radians(cn.lat)) as d, cn "
 
-		try{
-			assert.isDefined(lat, 'Variável Existe!');
-		}catch(err){
-			console.log(err.message);
-		}
-		
-		try{
-			assert.isDefined(lng, 'Variável Existe!');
-		}catch(err){
-			console.log(err.message);
-		}			
+				+ "WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn "
+
+				+ "WHERE da < {radius}  WITH cn "
+				+ "OPTIONAL MATCH (cn)-[r:IS_CONNECTED_TO]->(c:Category) "
+				+ "WHERE r.num_sensors > 0 "
+
+				+ "RETURN DISTINCT c.title";	
 
 		db.cypher({
 		    query: cypher,
+		    params: {
+	            lat: lat,
+	            lng: lng,
+	            radius: radius											
+		    },
 		    lean: true
 		}, (err, results) =>{
-
-			try{
-				assert.notExists(err, 'Sem erro!');
-			}catch(err){
-				console.log(err.message);
-			}
-
 			if (err) 
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else{
-		    	try{
-					assert.isDefined(results, 'Vetor Existe!');
-				}catch(err){
-					console.log(err.message);
-				}
 
 		    	results.forEach(function (obj) {
-		            const p = obj['cn'];
-		            const c = obj['c'];
-
-		            if(getDistanceFromLatLonInKm(lat, lng, p.lat, p.lng) < 1.5 && categories.indexOf(c.title) == -1)
-		            	categories.push(c.title);
+		            const c = obj['c.title'];
+		            categories.push(c);
 		            
 		        });
-
-		        try{
-					assert.exists(categories, 'Variável Existe!');
-				}catch(err){
-					console.log(err.message);
-				}
 
 				resolve({ status: 201, categories: categories });
 		    }

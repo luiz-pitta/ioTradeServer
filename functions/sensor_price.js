@@ -69,3 +69,39 @@ exports.getSensorPriceInformation = () =>
 		});
 
 	});
+
+
+/**
+ * @return Retorna as informações dos sensores.
+ */
+exports.getConnectPriceInformation = (device) => 
+	
+	new Promise((resolve,reject) => {
+
+		let price;
+
+		const cypher = "MATCH (c:Connection {device:{device}})-[r:IS_IN]->(g:Group) "
+					+"RETURN r.price ";
+
+		db.cypher({
+		    query: cypher,
+		    params: {
+		        device: device
+		    },
+		    lean: true
+		}, (err, results) =>{
+
+			if (err) 
+		    	reject({ status: 500, message: 'Internal Server Error !' });
+		    else{
+
+		    	results.forEach(function (obj) {
+		            const c = obj['r.price'];
+		            price = c;  
+		        });
+
+		    	resolve({ status: 201, message: 'WORKED', price: price });
+		    }
+		});
+
+	});

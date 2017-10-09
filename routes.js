@@ -23,105 +23,12 @@ const get_services = require('./functions/services');
 const update_user_budget = require('./functions/update_budget_user');
 const update_sensor_information = require('./functions/update_sensor_information');
 const get_sensor_matchmaking = require('./functions/sensor');
+const login = require('./functions/login');
+const convert = require('./functions/convert_data');
+
 
 const config = require('./config/config.json');
 const db = require('./models/Connection');
-
-
-let rule_sensor = new schedule.RecurrenceRule();
-rule_sensor.second = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54];
-
-const job_sensor = schedule.scheduleJob(rule_sensor, function(){
-
-    let rand_sen = Math.floor((Math.random() * 100000) + 1);
-
-    const cypher = "MATCH (o1:Owner {name:{owner}})  "
-            + "MATCH (c1:Category {title:{cat}}) MATCH (g1:Group {title:{group}})  "
-            + "FOREACH (r IN range(1,20) | MERGE (s1:Sensor { "
-            + "title: {sensor} + r, "
-            + "description:{description} }) "
-            + "MERGE (o1)-[:OWNS]->(s1) "
-            + "MERGE (s1)-[:BELONGS_TO]->(c1) "
-            + "MERGE (s1)-[:IS_IN {price:2.5, sum: 5, qty:1}]->(g1) ) ";
-
-    /*db.cypher({
-        query: cypher,
-        params: {
-            owner: "Pitta",
-            cat: "Temperatura",
-            description: "Mede Temperatura",
-            group: "C1",
-            sensor: "A" + rand_sen + "_" 
-        },
-        lean: true
-    }, (err, results) =>{
-        if (err) 
-            console.log('INTERNAL_SERVER_ERROR');
-    });*/
-
-});
-
-let rule_connect = new schedule.RecurrenceRule();
-//rule_connect.second = [3, 9, 15, 21, 27, 33, 39, 45, 48, 51, 57];
-rule_connect.second = [0, 30];
-
-const job_connect = schedule.scheduleJob(rule_connect, function(){
-
-    let rand_con = Math.floor((Math.random() * 100000) + 1);
-
-    const cypher = "MATCH (o1:Owner {name:{owner}}) "
-            + "MATCH (g1:Group {title:{group}}) "
-            + "MATCH (s1:Sensor) "
-            + "FOREACH (r IN range(1,20) | MERGE (c1:Conection { "
-            + "title: {title} + r, "
-            + "lat:-22.925419, "
-            + "lng:-43.259328, "
-            + "batery: round(rand()*100 + 1), "
-            + "sgnl_net: round(rand()*4 + 1) }) "
-            + "MERGE (c1)-[:IS_IN {price:3,sum:5,qty:1}]->(g1)  "
-            + "MERGE (c1)-[:IS_NEAR]->(s1)  "
-            + "MERGE (o1)-[:OWNS]->(c1) ) ";
-
-    /*db.cypher({
-        query: cypher,
-        params: {
-            owner: "Pitta",
-            group: "C1",
-            title: "Conectividade " + rand_con + "_" 
-        },
-        lean: true
-    }, (err, results) =>{
-        if (err) 
-            console.log('INTERNAL_SERVER_ERROR');
-        else
-            console.log('Foi 123!');
-    });*/
-
-});
-
-/*const job_change = schedule.scheduleJob(job_change, function(){
-
-    const cypher = "MATCH (s1:Sensor)-[r:IS_IN]->(g1:Group) "
-            + "MATCH (c1:Conection) "
-            + "SET c1.batery = round(rand()*100 + 1), "
-            + "c1.sgnl_net = round(rand()*4 + 1) ";
-
-    db.cypher({
-        query: cypher,
-        params: {
-            owner: "Pitta",
-            group: "C1",
-            title: "Conectividade " + rand_con + "_" 
-        },
-        lean: true
-    }, (err, results) =>{
-        if (err) 
-            console.log('INTERNAL_SERVER_ERROR');
-        else
-            console.log('Foi 123!');
-    });
-
-});*/
 
 
 module.exports = router => {
@@ -136,6 +43,68 @@ module.exports = router => {
         const price = req.body.price;
 
         update_user_budget.updateUserBudget(price)
+
+            .then(result => res.json({ message: result.message }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+
+    });
+
+     /**
+     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     */
+    router.post('/login_user', (req, res) => {
+
+        const name = req.body.name;
+
+        login.loginMobileHub(name)
+
+            .then(result => res.json({ message: result.message }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+
+    });
+
+    /**
+     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     */
+    router.post('/register_analytics', (req, res) => {
+
+        const name = req.body.name;
+        const uuid = req.body.uuid;
+        const batery = req.body.batery;
+        const signal = req.body.signal;
+        const active = req.body.active;
+        const device = req.body.device;
+
+        get_user.setAnalyticsMobileHub(name, uuid, batery, signal, active, device)
+
+            .then(result => res.json({ message: result.message }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+
+    });
+
+
+    /**
+     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     */
+    router.post('/register_location', (req, res) => {
+
+        const name = req.body.name;
+        const uuid = req.body.uuid;
+        const batery = req.body.batery;
+        const signal = req.body.signal;
+        const lat = req.body.lat;
+        const lng = req.body.lng;
+        const accuracy = req.body.accuracy;
+        const active = req.body.active;
+        const device = req.body.device;
+
+        get_user.setLocationMobileHub(name, uuid, batery, signal, lat, lng, accuracy, active, device)
 
             .then(result => res.json({ message: result.message }))
 
@@ -195,14 +164,30 @@ module.exports = router => {
     });
 
     /**
+     * @return Retorna as informações dos mobile hub.
+     */
+    router.post('/get_connect_price_information', (req, res) => {
+
+        const device = req.body.device;
+
+        sensor_price.getConnectPriceInformation(device)
+
+            .then(result => res.json({ price: result.price }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
      * @return Retorna as informações dos serviços.
      */
     router.post('/get_services_information', (req, res) => {
 
         const lat = req.body.lat;
         const lng = req.body.lng;
+        const radius = req.body.radius;
 
-        get_services.getServices(lat, lng)
+        get_services.getServices(lat, lng, radius)
 
             .then(result => res.json({ categories: result.categories }))
 
@@ -217,10 +202,11 @@ module.exports = router => {
 
         const lat = req.body.lat;
         const lng = req.body.lng;
+        const radius = req.body.radius;
 
         const category = req.body.service;
 
-        get_sensor_matchmaking.getSensorAlgorithm(lat, lng, category)
+        get_sensor_matchmaking.getSensorAlgorithm(lat, lng, category, radius)
 
             .then(result => res.json({ sensor: result.sensor, connect: result.connect }))
 
@@ -235,12 +221,96 @@ module.exports = router => {
 
         const lat = req.body.lat;
         const lng = req.body.lng;
+        const radius = req.body.radius;
 
         const category = req.body.service;
 
-        get_sensor_matchmaking.getSensorAlgorithmAnalytics(lat, lng, category)
+        get_sensor_matchmaking.getSensorAlgorithmAnalytics(lat, lng, category, radius)
 
             .then(result => res.json({ sensor: result.sensor, connect: result.connect, analytics: result.analytics }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
+     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     */
+    router.post('/get_sensor_registered', (req, res) => {
+
+        const macAddress = req.body.macAddress;
+
+        get_sensor_matchmaking.getSensorRegistered(macAddress)
+
+            .then(result => res.json({ message: result.message, sensors: result.services }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
+     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     */
+    router.post('/set_sensor_parameters', (req, res) => {
+
+        const macAddress = req.body.macAddress;
+        const device = req.body.name;
+        const rssi = req.body.rssi;
+
+        get_sensor_matchmaking.setSensorParameters(macAddress, device, rssi)
+
+            .then(result => res.json({ message: result.message }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
+     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     */
+    router.post('/remove_sensor_mobileHub', (req, res) => {
+
+        const macAddress = req.body.macAddress;
+        const device = req.body.name;
+
+        get_sensor_matchmaking.removeSensorMobileHub(macAddress, device)
+
+            .then(result => res.json({ message: result.message }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
+     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     */
+    router.post('/set_actuator_state', (req, res) => {
+
+        const macAddress = req.body.macAddress;
+        const category = req.body.category;
+
+        get_sensor_matchmaking.setActuatorState(macAddress, category)
+
+            .then(result => res.json({ message: result.message }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
+     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     */
+    router.post('/convert_sensor_data', (req, res) => {
+
+        const value = req.body.value;
+        const calibration = req.body.calibrationData;
+        const uuid = req.body.uuidData;
+        const name = req.body.name;
+        const macAddress = req.body.macAddress;
+
+        convert.getConvertedData(value, calibration, uuid, name, macAddress)
+
+            .then(result => res.json({ message: result.message, sensorName: result.sensorName, uuid: result.uuid, data: result.data, macAddress: result.macAddress }))
 
             .catch(err => res.status(err.status)
                 .json({ message: err.message }));

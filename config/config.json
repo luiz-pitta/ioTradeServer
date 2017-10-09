@@ -5,7 +5,7 @@
    "secret" : "Tymo",
    "api" : "key-4c541bf0bc4c2380e9d81a3f0c395b09",
    "domain" : "tymo.me",
-   "user_neo4j" : "neo_trial_verlie_kshlerin_darkblue",
-   "pass_neo4j" : "oo6Tdi0pPWaNGEENBGC6oEH049P81j8anu1morK7",
-   "url_neo4j" : "https://neo-trial-verlie-kshlerin-darkblue.azure.graphstory.com:7473/browser/"
+   "user_neo4j" : "neo4j",
+   "pass_neo4j" : "admin",
+   "url_neo4j" : "http://127.0.0.1:7474/browser/"
 }
