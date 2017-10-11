@@ -100,7 +100,6 @@ exports.updateSensorRating = (sensor, connect, analytics) =>
 			    },
 			    lean: true
 			}, (err, results) =>{
-				console.log(err)
 				if (err) 
 			    	reject({ status: 500, message: 'Internal Server Error !' });
 			    else
