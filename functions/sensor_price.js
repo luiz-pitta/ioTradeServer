@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Módulo que faz retorna as informações de todos os sensores 
+ * Module that does returns information from all sensors
  *
  * @author Luiz Guilherme Pitta
  */
@@ -8,13 +8,13 @@
 const db = require('../models/Connection');
 
 /**
- * Módulo para assertivas
+ * Assertive module
  */
 const chai = require('chai'); 
 const assert = chai.assert; 
 
 /**
- * @return Retorna as informações dos sensores.
+ * @return Returns the sensor provider price information.
  */
 exports.getSensorPriceInformation = () => 
 	
@@ -72,7 +72,7 @@ exports.getSensorPriceInformation = () =>
 
 
 /**
- * @return Retorna as informações dos sensores.
+ * @return Returns the connection provider price information.
  */
 exports.getConnectPriceInformation = (device) => 
 	

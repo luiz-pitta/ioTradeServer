@@ -1,3 +1,9 @@
+/**
+ * Module that has functions that help the data conversion
+ *
+ * @author Luiz Guilherme Pitta
+ */
+
 exports.shortSignedAtOffset = function(c, offset) {
 	let lowerByte = c[offset] & 0xFF;
 	let upperByte = c[offset + 1]; // // Interpret MSB as signed

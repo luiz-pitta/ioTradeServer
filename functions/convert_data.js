@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Módulo que faz retorna os sensores que estão próximos ao usuário
+ * Module that coordinates the data conversion
  *
  * @author Luiz Guilherme Pitta
  */
@@ -10,7 +10,7 @@ const sensorTagCC2650 = require('../drivers/CC2650 SensorTag');
 const db = require('../models/Connection');
 
 /**
- * @return Retorna as informações dos serviços.
+ * @return Returns the converted data
  */
 exports.getConvertedData = (value, calibration, uuid, sensorName, macAddress, device) => 
 	

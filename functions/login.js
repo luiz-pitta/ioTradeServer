@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Módulo que faz retorna os sensores que estão próximos ao usuário
+ * Module responsible for the login of Providers (Analytics and Connection)
  *
  * @author Luiz Guilherme Pitta
  */
@@ -8,7 +8,7 @@
 const db = require('../models/Connection');
 
 /**
- * @return Retorna as informações dos serviços.
+ * @return Returns the user
  */
 exports.loginMobileHub = (name) => 
 	

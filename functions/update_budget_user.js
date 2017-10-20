@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Módulo que faz a atualização do dado de orçamento de um usuário
+ * Module that updates a user's budget data
  *
  * @author Luiz Guilherme Pitta
  */
@@ -8,13 +8,13 @@
 const db = require('../models/Connection');
 
 /**
- * Módulo para assertivas
+ * Assertive module
  */
 const chai = require('chai'); 
 const assert = chai.assert; 
 
 /**
- * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+ * @return Returns a message that everything went right in updating the data.
  */
 exports.updateUserBudget = (price) => 
 	

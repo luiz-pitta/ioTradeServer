@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Módulo que roda o algoritmo de matchmaking
+ * Module that runs the matchmaking algorithm
  *
  * @author Luiz Guilherme Pitta
  */
@@ -8,15 +8,15 @@
 const db = require('../models/Connection');
 
 /**
- * Módulo para assertivas
+ * Assertive module
  */
 const chai = require('chai'); 
 const assert = chai.assert;  
 
 /**
- * @param min Número mínimo.
- * @param max Número máximo.
- * @return Retorna um número aleatório entre o {min,max} recebidos como parâmetro
+ * @param min Minimum number.
+ * @param max Maximum number.
+ * @return Returns a random number between the {min, max} received as parameter
  */
 function randomIntFromInterval(min,max)
 {
@@ -24,9 +24,9 @@ function randomIntFromInterval(min,max)
 }
 
 /**
- * @return Retorna os serviços sem analytics do algoritmo de matchmaking.
+ * @return Returns services without analytics of the matchmaking algorithm.
  */
-exports.getSensorAlgorithm = (lat, lng, category, radius) => 
+exports.getSensorAlgorithm = (lat, lng, category, radius, connection_device) => 
 	
 	new Promise((resolve,reject) => {
 
@@ -51,7 +51,7 @@ exports.getSensorAlgorithm = (lat, lng, category, radius) =>
 				+ "MATCH (s:Sensor)-[sr:IS_IN]->(g:Group) "
 				+ "WITH toFloat(you.budget - min(sr.price)) as min_price "
 
-				+ "MATCH (cn:Connection) WHERE cn.signal >= 5 AND cn.batery >= 30 "
+				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.batery >= 30 AND (NOT cn.device IN {connection_device}) "
 				+ "WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
 				+ "sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
 				+ "cos(radians({lat}))*cos(radians(cn.lat)) as d, cn, min_price "
@@ -80,6 +80,7 @@ exports.getSensorAlgorithm = (lat, lng, category, radius) =>
 		    query: cypher_con,
 		    params: {
 	            category: category,
+	            connection_device: connection_device,
 	            lat: lat,
 	            lng: lng,
 	            radius: radius											
@@ -203,9 +204,9 @@ exports.getSensorAlgorithm = (lat, lng, category, radius) =>
 	});
 
 /**
- * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+ * @return Returns the services with analytics of the matchmaking algorithm.
  */
-exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius) => 
+exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius, connection_device) => 
 	
 	new Promise((resolve,reject) => {
 
@@ -226,7 +227,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius) =>
 				+ "MATCH (you:Profile) "
 				+ "WITH toFloat(you.budget - pack_price) as min_price "
 
-				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.batery >= 30 "
+				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.batery >= 30 AND (NOT cn.device IN {connection_device}) "
 				+ "WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
 				+ "sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
 				+ "cos(radians({lat}))*cos(radians(cn.lat)) as d, cn, min_price "
@@ -276,6 +277,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius) =>
 		    query: cypher_con,
 		    params: {
 	            category: category,
+	            connection_device: connection_device,
 	            lat: lat,
 	            lng: lng,
 	            radius: radius											
@@ -423,6 +425,8 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius) =>
 												const sensor_position = randomIntFromInterval(0, (sensor_vet.length-1));
 												sensor_chosen = sensor_vet[sensor_position];
 
+												//console.log(analytics_chosen.device)
+
 												resolve({ status: 201, sensor: sensor_chosen, connect: connect_chosen, analytics : analytics_chosen });
 											}
 											
@@ -444,6 +448,80 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius) =>
 
 	});
 
+/**
+ * @return Returns a new analytics provider after disconnection of the old one.
+ */
+exports.getNewAnalytics = (category, analytics_device, connection_device, macAddress) => 
+	
+	new Promise((resolve,reject) => {
+
+		let analytics_chosen;
+		let analytcs = [];
+
+		const cypher_ana = "MATCH (sc:SensorChild {macAddress: {macAddress}})-[:IS_FROM]->(s:Sensor)-[sr:IS_IN]->(g:Group) "
+				+ "WITH sr.price as sen_price "
+
+				+ "MATCH (g:Group)<-[cnr:IS_IN]-(cn:Connection {device: {device}}) "
+				+ "WITH cnr.price + sen_price as pack_price "
+
+				+ "MATCH (you:Profile) "
+				+ "WITH toFloat(you.budget - pack_price) as min_price "
+                                                 
+				+ "MATCH (c:Category {title:{category}})<-[:BELONGS_TO]-(a:Analytics)-[ar:IS_IN]->(g2:Group)  "
+				+ "WHERE ar.price < min_price AND a.signal >= 3 AND a.batery >= 30 AND (NOT a.device  IN {analytics_device}) "
+				+ "WITH a, min_price, g2, ar ORDER BY ar.sum/ar.qty DESC "
+
+				+ "RETURN g2.title, collect({a: a, ar: ar})[0..3] as ans";
+
+		db.cypher({
+		    query: cypher_ana,
+		    params: {
+	            category: category,
+	            analytics_device: analytics_device,
+	            macAddress: macAddress,
+	            device: connection_device,									
+		    },
+		    lean: true
+		}, (err, results) =>{
+			if (err) 
+		    	reject({ status: 500, message: 'Internal Server Error !' });
+		    else{
+
+		    	if(results && results.length > 0){
+
+			    	results.forEach(function (obj) {
+						const vet = obj['ans'];
+						const analytic_position = randomIntFromInterval(0, (vet.length-1));
+
+						let a = vet[analytic_position]['a'];
+						let ar = vet[analytic_position]['ar'];
+						a.price = ar.price;
+						a.rank = parseFloat(ar.sum)/parseFloat(ar.qty);
+						a.category = obj['g2.title'];
+
+						analytcs.push(a);
+			        });
+
+			    	if(analytcs.length > 0){
+				        const analytic_position = randomIntFromInterval(0, (analytcs.length-1));
+				        analytics_chosen = analytcs[analytic_position];
+
+				    	resolve({ status: 201, analytics : analytics_chosen });
+			    	}
+			        else
+			        	resolve({ status: 201, analytics : null });
+		    	}else
+		    		resolve({ status: 201, analytics : null });
+		    }
+		    
+		});
+
+	});
+
+
+/**
+ * @return Returns if the sensor is registered in the database
+ */
 exports.getSensorRegistered = (macAddress) => 
 	
 	new Promise((resolve,reject) => {
@@ -480,6 +558,10 @@ exports.getSensorRegistered = (macAddress) =>
 
 	});
 
+
+/**
+ * @return Updates sensor parameters
+ */
 exports.setSensorParameters = (macAddress, device, rssi) => 
 	
 	new Promise((resolve,reject) => {
@@ -539,6 +621,10 @@ exports.setSensorParameters = (macAddress, device, rssi) =>
 
 	});
 
+
+/**
+ * @return Removes the relation between a sensor and a connection provider
+ */
 exports.removeSensorMobileHub = (macAddress, device) => 
 	
 	new Promise((resolve,reject) => {
@@ -565,6 +651,10 @@ exports.removeSensorMobileHub = (macAddress, device) =>
 
 	});
 
+
+/**
+ * @return Updates the actuator state
+ */
 exports.setActuatorState = (macAddress, category) => 
 	
 	new Promise((resolve,reject) => {

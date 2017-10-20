@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Módulo que cria a conexão com o Banco de Dados Neo4j
+ * Module that creates the connection to the Neo4j Database
  *
  * @author Luiz Guilherme Pitta
  */

@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Módulo que faz retorna os sensores que estão próximos ao usuário
+ * Module that does returns the sensors that are close to the user
  *
  * @author Luiz Guilherme Pitta
  */
@@ -8,17 +8,17 @@
 const db = require('../models/Connection');
 
 /**
- * Módulo para assertivas
+ * Assertive module
  */
 const chai = require('chai'); 
 const assert = chai.assert; 
 
  /**
- * @param lat1 latitude ponto 1.
- * @param lon1 longitude ponto 1.
- * @param lat2 latitude ponto 2.
- * @param lon2 longitude ponto 2.
- * @return Retorna a distância entre dois pontos
+  * @param lat1 latitude point 1.
+  * @param lon1 longitude point 1.
+  * @param lat2 point 2 latitude.
+  * @param lon2 longitude point 2.
+  * @return Returns the distance between two points
  */
 function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
   const R = 6371; // Radius of the earth in km
@@ -37,14 +37,14 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
 
 /**
  * @param deg grau.
- * @return Retorna a conversão de graus para radianos
+ * @return Returns the conversion of degrees to radians
  */
 function deg2rad(deg) {
   return deg * (Math.PI/180);
 }
 
 /**
- * @return Retorna as informações dos serviços.
+ * @return Returns the services information.
  */
 exports.getServices = (lat, lng, radius) => 
 	
@@ -52,7 +52,7 @@ exports.getServices = (lat, lng, radius) =>
 
 		let categories =[];
 
-		const cypher = "MATCH (cn:Connection) WHERE cn.signal >= 5 AND cn.batery >= 30 "
+		const cypher = "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.batery >= 30 "
 				+ "WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
 				+ "sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
 				+ "cos(radians({lat}))*cos(radians(cn.lat)) as d, cn "

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Módulo que inicia o servidor
+ * Module that starts the server
  *
  * @author Luiz Guilherme Pitta
  */
@@ -11,7 +11,7 @@ const app        = express();
 const bodyParser = require('body-parser');
 const logger 	   = require('morgan');
 const router 	   = express.Router();
-let server_port = process.env.PORT || 8080; // Se mudar de servidor muda a string da porta
+let server_port = process.env.PORT || 8080; // If you change servers, change the port string
 
 app.use(bodyParser.json({limit: '500mb'}));
 app.use(logger('dev'));

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Módulo que faz a atualização dos dados de sensores e ranking dos serviços
+ * Module that updates sensor data and services ranking
  *
  * @author Luiz Guilherme Pitta
  */
@@ -10,13 +10,13 @@
 const db = require('../models/Connection');
 
 /**
- * Módulo para assertivas
+ * Assertive module
  */
 const chai = require('chai'); 
 const assert = chai.assert;  
 
 /**
- * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+ * @return Returns a message that everything went right in updating the data.
  */
 exports.updateSensorInformation = (title, price, category, category_new) => 
 	
@@ -46,7 +46,7 @@ exports.updateSensorInformation = (title, price, category, category_new) =>
 	});
 
 /**
- * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+ * @return Returns a message that everything went right in updating the data.
  */
 exports.updateSensorRating = (sensor, connect, analytics) => 
 	

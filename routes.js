@@ -1,13 +1,13 @@
 'use strict';
 
 /**
- * Módulo que faz o roteamento das solicitações para os determinados submodulos correspondentes
+ * Module that routes requests to corresponding submodules
  *
  * @author Luiz Guilherme Pitta
  */
 
 /**
- * Variáveis externas (bibliotecas)
+ * External variables (libraries)
  */
 const auth = require('basic-auth');
 const jwt = require('jsonwebtoken');
@@ -15,7 +15,7 @@ const schedule = require('node-schedule');
 
 
 /**
- * Variáveis da aplicação
+ * Application Variables
  */
 const sensor_price = require('./functions/sensor_price');
 const get_user = require('./functions/user');
@@ -36,7 +36,9 @@ module.exports = router => {
     router.get('/', (req, res) => res.end('IoTrade!'));
 
     /**
-     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     *  Updates user budget 
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/update_user_budget', (req, res) => {
 
@@ -52,7 +54,9 @@ module.exports = router => {
     });
 
      /**
-     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     *  Login User
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/login_user', (req, res) => {
 
@@ -68,7 +72,9 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     *  Register when an analytics provider logs in
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/register_analytics', (req, res) => {
 
@@ -90,7 +96,9 @@ module.exports = router => {
 
 
     /**
-     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     *  Register when a connection provider logs in
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/register_location', (req, res) => {
 
@@ -114,7 +122,9 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     *  Updates sensor information
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/update_sensor_information', (req, res) => {
 
@@ -133,7 +143,9 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna uma mensagem que tudo ocorreu certo na atualização dos dados.
+     *  Updates sensor rating
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/update_sensor_rating', (req, res) => {
 
@@ -151,7 +163,9 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna as informações dos sensores.
+     *  Get sensor price information
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.get('/get_sensor_price_information', (req, res) => {
 
@@ -164,7 +178,9 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna as informações dos mobile hub.
+     *  Get connection provider price information
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/get_connect_price_information', (req, res) => {
 
@@ -179,7 +195,7 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna as informações dos serviços.
+     * @return Returns all the services available to the users
      */
     router.post('/get_services_information', (req, res) => {
 
@@ -196,7 +212,7 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna os serviços sem analytics do algoritmo de matchmaking.
+     * @return Returns services without analytics of the matchmaking algorithm.
      */
     router.post('/get_sensor_matchmaking', (req, res) => {
 
@@ -205,8 +221,9 @@ module.exports = router => {
         const radius = req.body.radius;
 
         const category = req.body.service;
+        const connection_device = req.body.connectionDevice;
 
-        get_sensor_matchmaking.getSensorAlgorithm(lat, lng, category, radius)
+        get_sensor_matchmaking.getSensorAlgorithm(lat, lng, category, radius, connection_device)
 
             .then(result => res.json({ sensor: result.sensor, connect: result.connect }))
 
@@ -215,7 +232,7 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     * @return Returns the services with analytics of the matchmaking algorithm.
      */
     router.post('/get_sensor_matchmaking_analytics', (req, res) => {
 
@@ -224,8 +241,9 @@ module.exports = router => {
         const radius = req.body.radius;
 
         const category = req.body.service;
+        const connection_device = req.body.connectionDevice;
 
-        get_sensor_matchmaking.getSensorAlgorithmAnalytics(lat, lng, category, radius)
+        get_sensor_matchmaking.getSensorAlgorithmAnalytics(lat, lng, category, radius, connection_device)
 
             .then(result => res.json({ sensor: result.sensor, connect: result.connect, analytics: result.analytics }))
 
@@ -234,7 +252,25 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     * @return Returns a new analytics provider after disconnection of the old one.
+     */
+    router.post('/get_new_analytics', (req, res) => {
+
+        const connection_device = req.body.connectionDevice;
+        const analytics_device = req.body.analyticsDevice;
+        const macAddress = req.body.sensorMacAddress;
+        const category = req.body.service;
+
+        get_sensor_matchmaking.getNewAnalytics(category, analytics_device, connection_device, macAddress)
+
+            .then(result => res.json({ analytics: result.analytics }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
+     * @return Returns if a sensor is registered in the system
      */
     router.post('/get_sensor_registered', (req, res) => {
 
@@ -249,7 +285,7 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     * @return Updates sensor parameters
      */
     router.post('/set_sensor_parameters', (req, res) => {
 
@@ -266,7 +302,7 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     * @return Removes the relation between a sensor and a connection provider
      */
     router.post('/remove_sensor_mobileHub', (req, res) => {
 
@@ -282,7 +318,9 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     *  Updates the actuator state
+     *
+     * @return Returns a message that everything went right in updating the data.
      */
     router.post('/set_actuator_state', (req, res) => {
 
@@ -298,7 +336,9 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna os serviços com analytics do algoritmo de matchmaking.
+     *  Converts the data from sensor
+     *
+     * @return Returns the converted data from sensor
      */
     router.post('/convert_sensor_data', (req, res) => {
 
@@ -317,7 +357,7 @@ module.exports = router => {
     });
 
     /**
-     * @return Retorna o usuário do servidor.
+     * @return Returns the user 
      */
     router.get('/get_user', (req, res) => {
 

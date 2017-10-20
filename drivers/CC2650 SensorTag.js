@@ -1,3 +1,9 @@
+/**
+ * Module that the driver for SensorTag CC2650
+ *
+ * @author Luiz Guilherme Pitta
+ */
+
 'use strict';
 
 const utilities = require('./utilities');

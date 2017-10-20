@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Módulo que retorna as informações do usuário para a aplicação cliente
+ * Module that returns user information to IoTrade
  *
  * @author Luiz Guilherme Pitta
  */
@@ -9,15 +9,15 @@
 const db = require('../models/Connection');
 
 /**
- * Módulo para assertivas
+ * Assertive module
  */
 const chai = require('chai'); 
 const assert = chai.assert;   
 
 /**
- * @param min Número mínimo.
- * @param max Número máximo.
- * @return Retorna um número aleatório entre o {min,max} recebidos como parâmetro
+ * @param min Minimum number.
+ * @param max Maximum number.
+ * @return Returns a random number between the {min, max} received as parameter
  */
 function getCurrentGroup(battery, signal)
 {
@@ -66,7 +66,7 @@ function getCurrentGroup(battery, signal)
 }
 
 /**
- * @return Retorna o usuário do servidor.
+ * @return Returns the user of the server.
  */
 exports.getProfile = () => 
 	
@@ -116,7 +116,7 @@ exports.getProfile = () =>
 	});
 
 /**
- * @return Cria o usuário de conexão no banco.
+ * @return Creates the connection user in the database.
  */
 exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy, active, device) => 
 	
@@ -126,7 +126,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 
 		let price = [0.20,0.25,0.30,0.35,0.40,0.50,0.60,0.75,0.90,1.20];
 
-		const cypher = "MATCH (o:Owner {name:{name}})-[:OWNS]->(c:Connection {device:{device}}) "
+		const cypher = "MATCH (c:Connection {device:{device}}) "
 					+"SET c.batery = {battery}, c.signal = {signal}, c.lat = {lat}, c.lng = {lng}, "
 					+"c.accuracy = {accuracy}, c.active = {active}, c.device = {device}, c.uuid = {uuid} "
 					+"RETURN c ";
@@ -151,7 +151,6 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 		db.cypher({
 		    query: cypher,
 		    params: {
-	            name: name,
 				uuid: uuid,
 				battery: battery,
 				signal: signal,
@@ -190,7 +189,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 						if (err) 
 					    	reject({ status: 500, message: 'Internal Server Error !' });
 					    else
-					    	resolve({ status: 201, message: 'WORKED' });
+					    	resolve({ status: 201, message: 'CON' });
 					});
 		    	}else if(!active){
 		    			const cypher_remove = "MATCH (cn:Connection {device:{device}})-[r:IS_NEAR]->(sc:SensorChild) "
@@ -235,7 +234,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 											if (err) 
 										    	reject({ status: 500, message: 'Internal Server Error !' });
 										    else
-										    	resolve({ status: 201, message: 'WORKED' });
+										    	resolve({ status: 201, message: 'CON' });
 										});
 								    }
 								    
@@ -257,7 +256,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 						if (err) 
 					    	reject({ status: 500, message: 'Internal Server Error !' });
 					    else
-					    	resolve({ status: 201, message: 'WORKED' });
+					    	resolve({ status: 201, message: 'CON' });
 					});
 	    			
 				}
@@ -269,7 +268,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 
 
 /**
- * @return Cria o usuário de analytics no banco.
+ * @return Creates the analytics user in the database.
  */
 exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) => 
 	
@@ -279,7 +278,7 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 
 		let price = [0.25,0.30,0.35,0.40,0.45,0.60,0.70,0.85,1.00,1.30];
 
-		const cypher = "MATCH (o:Owner {name:{name}})-[:OWNS]->(a:Analytics {device:{device}}) "
+		const cypher = "MATCH (a:Analytics {device:{device}}) "
 					+"SET a.batery = {battery}, a.signal = {signal}, a.active = {active}, "
 					+"a.device = {device}, a.uuid = {uuid} "
 					+"RETURN a ";
@@ -304,7 +303,6 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 		db.cypher({
 		    query: cypher,
 		    params: {
-	            name: name,
 				uuid: uuid,
 				battery: battery,
 				signal: signal,
@@ -337,7 +335,7 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 						if (err) 
 					    	reject({ status: 500, message: 'Internal Server Error !' });
 					    else
-					    	resolve({ status: 201, message: 'WORKED' });
+					    	resolve({ status: 201, message: 'ANA' });
 					});
 		    	}else{
 					db.cypher({
@@ -353,7 +351,7 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 						if (err) 
 					    	reject({ status: 500, message: 'Internal Server Error !' });
 					    else
-					    	resolve({ status: 201, message: 'WORKED' });
+					    	resolve({ status: 201, message: 'ANA' });
 					});
 	    			
 				}
