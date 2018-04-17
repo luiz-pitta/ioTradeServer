@@ -51,22 +51,22 @@ exports.getSensorAlgorithm = (lat, lng, category, radius, connection_device) =>
 				+ "MATCH (s:Sensor)-[sr:IS_IN]->(g:Group) "
 				+ "WITH toFloat(you.budget - min(sr.price)) as min_price "
 
-				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.batery >= 30 AND (NOT cn.device IN {connection_device}) "
+				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.banned = false AND cn.batery >= 30 AND (NOT cn.device IN {connection_device}) "
 				+ "WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
 				+ "sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
 				+ "cos(radians({lat}))*cos(radians(cn.lat)) as d, cn, min_price "
 
 				+ "WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, min_price "
-				+ "WHERE da < {radius}  WITH cn, min_price ORDER BY cn.signal DESC, cn.batery DESC "
+				+ "WHERE da < {radius}  WITH cn, min_price ORDER BY cn.signal DESC, cn.batery DESC, cn.velocity "
 
 				+ "MATCH (g:Group)<-[cnr:IS_IN]-(cn)-[:IS_CONNECTED_TO]->(c:Category {title:{category}}) "
-				+ "WHERE cnr.price < min_price "
+				+ "WHERE cnr.price < min_price AND (cnr.sum/cnr.qty) >= 3.0 "
 
 				+ "RETURN g.title, collect(cn)[0..1] as cons";
 
 		const cypher_sens = "MATCH (g:Group)<-[sr:IS_IN]-(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}})  "
 				+"MATCH (cn:Connection)-[:IS_NEAR]->(sc:SensorChild)-[:IS_FROM]->(s) "
-				+"WHERE cn.device IN {connects} AND (NOT (sc)-[:IN_USE_ACTUATOR]->(c)) "
+				+"WHERE cn.device IN {connects} AND (NOT (sc)-[:IN_USE_ACTUATOR]->(c)) AND s.banned = false AND (sr.sum/sr.qty) >= 3.0 "
 
 				+"WITH cn, sc, sr, g ORDER BY sr.sum/sr.qty DESC, sr.price "
 
@@ -148,18 +148,18 @@ exports.getSensorAlgorithm = (lat, lng, category, radius, connection_device) =>
 							    	else{
 
 								    	connect_chosen = results[connect_position]['cn'];
-								    	connect_chosen.price = results[connect_position]['cnr'].price;
 								    	connect_chosen.rank = parseFloat(results[connect_position]['cnr'].sum)/parseFloat(results[connect_position]['cnr'].qty);
 								    	connect_chosen.category = results[connect_position]['g2.title'];
+								    	connect_chosen.price = results[connect_position]['cnr'].price - results[connect_position]['cnr'].price*(0.5 - connect_chosen.rank/10);
 
 								    	sensors = results[connect_position]['sens'];
 
 								    	const sensor_position = randomIntFromInterval(0, (sensors.length-1));
 
 								    	sensor_chosen = sensors[sensor_position]['s'];
-								    	sensor_chosen.price = sensors[sensor_position]['sr'].price;
 								    	sensor_chosen.rank = parseFloat(sensors[sensor_position]['sr'].sum)/parseFloat(sensors[sensor_position]['sr'].qty);
 								    	sensor_chosen.category = sensors[sensor_position]['g'];
+								    	sensor_chosen.price = sensors[sensor_position]['sr'].price - sensors[sensor_position]['sr'].price*(0.5 - sensor_chosen.rank/10);
 								    	sensor_chosen.macAddress = sensors[sensor_position]['sc'];
 								    	sensor_chosen.uuidData = sensors[sensor_position]['r'].uuidData;
 								    	sensor_chosen.unit = sensors[sensor_position]['r'].unit;
@@ -227,16 +227,16 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius, connection_de
 				+ "MATCH (you:Profile) "
 				+ "WITH toFloat(you.budget - pack_price) as min_price "
 
-				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.batery >= 30 AND (NOT cn.device IN {connection_device}) "
+				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.banned = false AND cn.batery >= 30 AND (NOT cn.device IN {connection_device}) "
 				+ "WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
 				+ "sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
 				+ "cos(radians({lat}))*cos(radians(cn.lat)) as d, cn, min_price "
 
 				+ "WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, min_price "
-				+ "WHERE da < {radius}  WITH cn, min_price ORDER BY cn.signal DESC, cn.batery DESC "
+				+ "WHERE da < {radius}  WITH cn, min_price ORDER BY cn.signal DESC, cn.batery DESC, cn.velocity "
 
 				+ "MATCH (g:Group)<-[cnr:IS_IN]-(cn)-[:IS_CONNECTED_TO]->(c:Category {title:{category}}) "
-				+ "WHERE cnr.price < min_price "
+				+ "WHERE cnr.price < min_price AND (cnr.sum/cnr.qty) >= 3.0 "
 
 				+ "RETURN g.title, collect(cn.device)[0..1] as cons";
 
@@ -251,13 +251,13 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius, connection_de
 				+ "WITH toFloat(you.budget - pack_price) as min_price "
                                                  
 				+ "MATCH (c:Category {title:{category}})<-[:BELONGS_TO]-(a:Analytics)-[ar:IS_IN]->(g2:Group)  "
-				+ "WHERE ar.price < min_price AND a.signal >= 3 AND a.batery >= 30 WITH a, min_price, g2 ORDER BY ar.sum/ar.qty DESC  "
+				+ "WHERE ar.price < min_price AND a.signal >= 3 AND a.banned = false AND a.batery >= 30 AND (ar.sum/ar.qty) >= 3.0 WITH a, min_price, g2 ORDER BY ar.sum/ar.qty DESC  "
 
 				+ "RETURN g2.title, collect(a.device)[0..3] as ans";
 
-		const cypher_sens = "MATCH (g:Group)<-[sr:IS_IN]-(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}})  "
+		const cypher_sens = "MATCH (g:Group)<-[sr:IS_IN]-(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}}) "
 				+"MATCH (cn:Connection)-[:IS_NEAR]->(sc:SensorChild)-[:IS_FROM]->(s) "
-				+"WHERE cn.device IN {connects} AND (NOT (sc)-[:IN_USE_ACTUATOR]->(c)) "
+				+"WHERE cn.device IN {connects} AND (NOT (sc)-[:IN_USE_ACTUATOR]->(c)) AND s.banned = false AND (sr.sum/sr.qty) >= 3.0 "
 
 				+"WITH cn, sc, sr, g ORDER BY sr.sum/sr.qty DESC, sr.price "
 
@@ -365,9 +365,9 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius, connection_de
 
 									    	results.forEach(function (obj) {
 									    		let cn = obj['cn'];
-									    		cn.price = obj['cnr'].price;
 									    		cn.rank = parseFloat(obj['cnr'].sum)/parseFloat(obj['cnr'].qty);
 									    		cn.category = obj['g2.title'];
+									    		cn.price = obj['cnr'].price - obj['cnr'].price*(0.5 - cn.rank/10);
 									    		result[cn.device] = [];
 
 									            const vet = obj['res'];
@@ -376,9 +376,9 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius, connection_de
 
 									            vet.forEach(function (sen) {
 									            	let s = sen['s'];
-									            	s.price = sen['sr'].price;
 									            	s.rank = parseFloat(sen['sr'].sum)/parseFloat(sen['sr'].qty);
 									            	s.category = sen['g'];
+									            	s.price = sen['sr'].price - sen['sr'].price*(0.5 - s.rank/10);
 									            	s.macAddress = sen['sc'];
 							    					s.uuidData = sen['r'].uuidData;
 							    					s.unit = sen['r'].unit;
@@ -391,6 +391,7 @@ exports.getSensorAlgorithmAnalytics = (lat, lng, category, radius, connection_de
 									            	a.price = sen['ar'].price;
 									            	a.rank = parseFloat(sen['ar'].sum)/parseFloat(sen['ar'].qty);
 									            	a.category = sen['g3'];
+									            	a.price = sen['ar'].price - sen['ar'].price*(0.5 - a.rank/10);
 									            	a.services_description = sen['aar'].services_description;
 							    					a.services_prices = sen['aar'].services_prices;
 
@@ -674,6 +675,188 @@ exports.setActuatorState = (macAddress, category) =>
 		    	reject({ status: 500, message: 'Internal Server Error !' });
 		    else
 		    	resolve({ status: 201, message: 'OK' });
+		});
+
+	});
+
+/**
+ * @return Returns services without analytics of the matchmaking algorithm.
+ */
+exports.getNewConnectionActuator = (lat, lng, category, radius, connection_device, macAddress) => 
+	
+	new Promise((resolve,reject) => {
+
+		let sensors;
+		let connects =[];
+		let sens =[];
+		let connect_chosen;
+		let sensor_chosen;
+
+		const cypher = "MATCH (g:Group)<-[sr:IS_IN]-(s:Sensor)<-[:IS_FROM]-(sc:SensorChild)"
+				+"WHERE sc.macAddress IN {sens} "
+				+"WITH s, sr, g, sc "
+
+				+"MATCH (cn:Connection)-[cnr:IS_IN]->(g2:Group), (you:Profile), (s)-[r:BELONGS_TO]->(c:Category {title: {category}}) "
+				+"WHERE cn.device IN {connects} AND (sr.price + cnr.price) <= you.budget "
+
+				+"WITH cn, s, sr, cnr, g, g2, sc, r  ORDER BY sr.sum/sr.qty DESC, sr.price "
+
+				+"RETURN cn, cnr, g2.title, collect({s:s,sr:sr,g:g.title,r:r,sc:sc.macAddress})[0..5] as sens ORDER BY cnr.sum/cnr.qty DESC, cnr.price, cn.signal DESC, cn.batery DESC ";
+
+		const cypher_con = "MATCH (you:Profile)"
+				+ "MATCH (s:Sensor)-[sr:IS_IN]->(g:Group) "
+				+ "WITH toFloat(you.budget - min(sr.price)) as min_price "
+
+				+ "MATCH (cn:Connection) WHERE cn.signal >= 3 AND cn.banned = false AND cn.batery >= 30 AND (NOT cn.device IN {connection_device}) "
+				+ "WITH sin(radians(cn.lat-({lat}))/2)*sin(radians(cn.lat-({lat}))/2) + "
+				+ "sin(radians(cn.lng-({lng}))/2)*sin(radians(cn.lng-({lng}))/2)* "
+				+ "cos(radians({lat}))*cos(radians(cn.lat)) as d, cn, min_price "
+
+				+ "WITH 6371*2*atan2(sqrt(d), sqrt(1-d)) as da, cn, min_price "
+				+ "WHERE da < {radius}  WITH cn, min_price ORDER BY cn.signal DESC, cn.batery DESC, cn.velocity "
+
+				+ "MATCH (g:Group)<-[cnr:IS_IN]-(cn)-[:IS_CONNECTED_TO]->(c:Category {title:{category}}) "
+				+ "WHERE cnr.price < min_price AND (cnr.sum/cnr.qty) >= 3.0 "
+
+				+ "RETURN g.title, collect(cn)[0..1] as cons";
+
+		const cypher_sens = "MATCH (g:Group)<-[sr:IS_IN]-(s:Sensor)-[:BELONGS_TO]->(c:Category {title: {category}})  "
+				+"MATCH (cn:Connection)-[:IS_NEAR]->(sc:SensorChild)-[:IS_FROM]->(s) "
+				+"WHERE cn.device IN {connects} AND (NOT (sc)-[:IN_USE_ACTUATOR]->(c)) "
+				+"AND s.banned = false AND (sr.sum/sr.qty) >= 3.0 AND sc.macAddress = {macAddress} "
+
+				+"WITH cn, sc, sr, g ORDER BY sr.sum/sr.qty DESC, sr.price "
+
+				+"RETURN cn.device, collect({s:sc.macAddress,g:g.title}) as sens ";
+
+		const cypher_update_actuator = "MATCH (sc:SensorChild {macAddress : {macAddress} }), (c:Category {title: {category} })  "
+				+"MERGE (sc)-[:IN_USE_ACTUATOR]->(c) "
+				+"RETURN sc ";
+						
+		db.cypher({
+		    query: cypher_con,
+		    params: {
+	            category: category,
+	            connection_device: connection_device,
+	            lat: lat,
+	            lng: lng,
+	            radius: radius											
+		    },
+		    lean: true
+		}, (err, results) =>{
+			if (err) 
+		    	reject({ status: 500, message: 'Internal Server Error !' });
+		    else{
+		    	let i, j;
+
+		    	if(results && results.length > 0){
+
+		    		results.forEach(function (obj) {
+			             const vet = obj['cons'];
+			             vet.forEach(function (cn) {
+			             	connects.push(cn.device);
+			             });
+			             
+			        });
+
+			        db.cypher({
+					    query: cypher_sens,
+					    params: {
+				            category: category,
+				            macAddress: macAddress,
+				            connects: connects										
+					    },
+					    lean: true
+					}, (err, results) =>{
+						if (err) 
+					    	reject({ status: 500, message: 'Internal Server Error !' });
+					    else{
+
+					    	results.forEach(function (obj) {
+					    		let aux_group = [];
+					            const vet = obj['sens'];
+					            vet.forEach(function (sen) {
+					            	const s = sen['s'];
+					            	const g = sen['g'];
+					            	if(aux_group[g] === undefined){
+					            		aux_group[g] = true;
+					            		if(sens.indexOf(s) == -1)
+					            			sens.push(s);
+					            	}
+					            });
+					        });
+
+					    	db.cypher({
+							    query: cypher,
+							    params: {
+						            category: category,
+						            sens: sens,
+						            connects: connects										
+							    },
+							    lean: true
+							}, (err, results) =>{
+								if (err) 
+							    	reject({ status: 500, message: 'Internal Server Error !' });
+							    else{
+
+							    	const connect_position = randomIntFromInterval(0, (results.length-1));
+
+							    	if(results[connect_position] === undefined)
+							    		resolve({ status: 201, sensor: null, connect: null });
+							    	else{
+
+								    	connect_chosen = results[connect_position]['cn'];
+								    	connect_chosen.rank = parseFloat(results[connect_position]['cnr'].sum)/parseFloat(results[connect_position]['cnr'].qty);
+								    	connect_chosen.category = results[connect_position]['g2.title'];
+								    	connect_chosen.price = results[connect_position]['cnr'].price - results[connect_position]['cnr'].price*(0.5 - connect_chosen.rank/10);
+
+								    	sensors = results[connect_position]['sens'];
+
+								    	const sensor_position = randomIntFromInterval(0, (sensors.length-1));
+
+								    	sensor_chosen = sensors[sensor_position]['s'];
+								    	sensor_chosen.rank = parseFloat(sensors[sensor_position]['sr'].sum)/parseFloat(sensors[sensor_position]['sr'].qty);
+								    	sensor_chosen.category = sensors[sensor_position]['g'];
+								    	sensor_chosen.price = sensors[sensor_position]['sr'].price - sensors[sensor_position]['sr'].price*(0.5 - sensor_chosen.rank/10);
+								    	sensor_chosen.macAddress = sensors[sensor_position]['sc'];
+								    	sensor_chosen.uuidData = sensors[sensor_position]['r'].uuidData;
+								    	sensor_chosen.unit = sensors[sensor_position]['r'].unit;
+
+								    	sensor_chosen.actuator = sensors[sensor_position]['r'].actuator;
+								    	sensor_chosen.option_bytes = sensors[sensor_position]['r'].option_bytes;
+								    	sensor_chosen.option_description = sensors[sensor_position]['r'].option_description;
+
+								    	if(sensor_chosen.actuator){
+									    	db.cypher({
+											    query: cypher_update_actuator,
+											    params: {
+											        macAddress: sensor_chosen.macAddress,
+											        category: category
+											    },
+											    lean: true
+											}, (err, results) =>{
+
+												if (err) 
+											    	reject({ status: 500, message: 'Internal Server Error !' });
+											    else
+											    	resolve({ status: 201, sensor: sensor_chosen, connect: connect_chosen });
+											});
+									    }else
+									    	resolve({ status: 201, sensor: sensor_chosen, connect: connect_chosen });
+									    }
+							    }
+							    
+							});
+					    }
+					    
+					});
+
+			    
+				}else
+					resolve({ status: 201, sensor: null, connect: null });
+				
+		    }
+		    
 		});
 
 	});

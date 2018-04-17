@@ -36,7 +36,7 @@ function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
 }
 
 /**
- * @param deg grau.
+ * @param deg degree.
  * @return Returns the conversion of degrees to radians
  */
 function deg2rad(deg) {

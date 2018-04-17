@@ -118,7 +118,7 @@ exports.getProfile = () =>
 /**
  * @return Creates the connection user in the database.
  */
-exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy, active, device) => 
+exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy, active, device, velocity) => 
 	
 	new Promise((resolve,reject) => {
 
@@ -127,7 +127,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 		let price = [0.20,0.25,0.30,0.35,0.40,0.50,0.60,0.75,0.90,1.20];
 
 		const cypher = "MATCH (c:Connection {device:{device}}) "
-					+"SET c.batery = {battery}, c.signal = {signal}, c.lat = {lat}, c.lng = {lng}, "
+					+"SET c.batery = {battery}, c.signal = {signal}, c.lat = {lat}, c.lng = {lng}, c.velocity = {velocity}, "
 					+"c.accuracy = {accuracy}, c.active = {active}, c.device = {device}, c.uuid = {uuid} "
 					+"RETURN c ";
 
@@ -135,7 +135,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 					+"MATCH (g:Group {title:{title}})  "
 					+"MERGE (o)-[:OWNS]->(c:Connection {device:{device}}) "
 					+"MERGE (c)-[:IS_IN {price:{price},sum:5,qty:1}]->(g) " 
-					+"SET c.batery = {battery}, c.signal = {signal}, c.lat = {lat}, c.lng = {lng}, "
+					+"SET c.batery = {battery}, c.signal = {signal}, c.lat = {lat}, c.lng = {lng}, c.velocity = {velocity}, "
 					+"c.accuracy = {accuracy}, c.active = {active}, c.device = {device}, c.uuid = {uuid} "
 					+"RETURN c ";
 
@@ -158,6 +158,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 				lng: lng,
 				accuracy: accuracy,
 				device: device,
+				velocity: velocity,
 				active: active
 
 		    },
@@ -180,6 +181,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 							lng: lng,
 							accuracy: accuracy,
 							device: device,
+							velocity: velocity,
 							active: active,
 							title: 'C' + group,
 							price: price[group]												
@@ -270,7 +272,7 @@ exports.setLocationMobileHub = (name, uuid, battery, signal, lat, lng, accuracy,
 /**
  * @return Creates the analytics user in the database.
  */
-exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) => 
+exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device, velocity) => 
 	
 	new Promise((resolve,reject) => {
 
@@ -280,7 +282,7 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 
 		const cypher = "MATCH (a:Analytics {device:{device}}) "
 					+"SET a.batery = {battery}, a.signal = {signal}, a.active = {active}, "
-					+"a.device = {device}, a.uuid = {uuid} "
+					+"a.device = {device}, a.uuid = {uuid}, a.velocity = {velocity} "
 					+"RETURN a ";
 
 		const cypher_new = "MATCH (o:Owner {name:{name}}) "
@@ -288,7 +290,7 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 					+"MERGE (o)-[:OWNS]->(a:Analytics {device:{device}}) "
 					+"MERGE (a)-[:IS_IN {price:{price},sum:5,qty:1}]->(g) " 
 					+"SET a.batery = {battery}, a.signal = {signal}, a.active = {active},  "
-					+"a.device = {device},  a.uuid = {uuid} "
+					+"a.device = {device},  a.uuid = {uuid}, a.velocity = {velocity} "
 					+"RETURN a ";
 
 		const cypher_group = "MATCH (a:Analytics {device:{device}})-[r:IS_IN]->(g:Group) MATCH (g2:Group {title: {title_new}}) "
@@ -307,6 +309,7 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 				battery: battery,
 				signal: signal,
 				device: device,
+				velocity: velocity,
 				active: active
 
 		    },
@@ -327,6 +330,7 @@ exports.setAnalyticsMobileHub = (name, uuid, battery, signal, active, device) =>
 							signal: signal,
 							device: device,
 							active: active,
+							velocity: velocity,
 							title: 'C' + group,
 							price: price[group]												
 					    },

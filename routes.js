@@ -30,6 +30,32 @@ const convert = require('./functions/convert_data');
 const config = require('./config/config.json');
 const db = require('./models/Connection');
 
+let rule_refresh_connected_devices = new schedule.RecurrenceRule();
+rule_refresh_connected_devices.hour = 12; 
+rule_refresh_connected_devices.minute = 0;
+
+const job_refresh_connected_devices = schedule.scheduleJob(rule_refresh_connected_devices, function(){
+
+    const cypher = "OPTIONAL MATCH (s:Sensor)-[sr:IS_IN]->(g:Group) "
+                + "WHERE (sr.sum/sr.qty) < 3.0 "
+                + "WITH s "
+                + "OPTIONAL MATCH (cn:Connection)-[cnr:IS_IN]->(g2:Group) "
+                + "WHERE (cnr.sum/cnr.qty) < 3.0 "
+                + "WITH cn, s "
+                + "OPTIONAL MATCH (a:Analytics)-[ar:IS_IN]->(g3:Group) "
+                + "WHERE (ar.sum/ar.qty) < 3.0 "
+                + "SET s.banned = true, cn.banned = true, a.banned = true ";
+
+    db.cypher({
+        query: cypher,
+        lean: true
+    }, (err, results) =>{
+        if (err) 
+            console.log("Error updating");
+    });
+
+});
+
 
 module.exports = router => {
 
@@ -84,8 +110,9 @@ module.exports = router => {
         const signal = req.body.signal;
         const active = req.body.active;
         const device = req.body.device;
+        const velocity = req.body.velocity;
 
-        get_user.setAnalyticsMobileHub(name, uuid, batery, signal, active, device)
+        get_user.setAnalyticsMobileHub(name, uuid, batery, signal, active, device, velocity)
 
             .then(result => res.json({ message: result.message }))
 
@@ -111,8 +138,9 @@ module.exports = router => {
         const accuracy = req.body.accuracy;
         const active = req.body.active;
         const device = req.body.device;
+        const velocity = req.body.velocity;
 
-        get_user.setLocationMobileHub(name, uuid, batery, signal, lat, lng, accuracy, active, device)
+        get_user.setLocationMobileHub(name, uuid, batery, signal, lat, lng, accuracy, active, device, velocity)
 
             .then(result => res.json({ message: result.message }))
 
@@ -224,6 +252,27 @@ module.exports = router => {
         const connection_device = req.body.connectionDevice;
 
         get_sensor_matchmaking.getSensorAlgorithm(lat, lng, category, radius, connection_device)
+
+            .then(result => res.json({ sensor: result.sensor, connect: result.connect }))
+
+            .catch(err => res.status(err.status)
+                .json({ message: err.message }));
+    });
+
+    /**
+     * @return Returns services without analytics of the matchmaking algorithm.
+     */
+    router.post('/get_actuator_matchmaking', (req, res) => {
+
+        const lat = req.body.lat;
+        const lng = req.body.lng;
+        const radius = req.body.radius;
+        const sensorMacAddress = req.body.sensorMacAddress;
+
+        const category = req.body.service;
+        const connection_device = req.body.connectionDevice;
+
+        get_sensor_matchmaking.getNewConnectionActuator(lat, lng, category, radius, connection_device, sensorMacAddress)
 
             .then(result => res.json({ sensor: result.sensor, connect: result.connect }))
 
